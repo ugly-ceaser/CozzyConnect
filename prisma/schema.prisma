@@ -1,0 +1,166 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+    output   = "./generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+
+
+model User {
+  
+  id          String    @id @default(uuid())
+  
+ 
+  email       String    @unique
+  
+ 
+  phoneNumber String
+  
+  
+  fullName    String
+  
+ 
+  password    String
+  
+ 
+  profilePicture String
+
+  isVerified Boolean   @default(false)
+}
+
+
+model ChatMessage {
+  id           Int       @id @default(autoincrement())
+  
+  // Reference to the sender user
+  senderId     String
+  sender       User      @relation(fields: [senderId], references: [id])
+  
+  // Reference to the receiver user
+  receiverId   String
+  receiver     User      @relation(fields: [receiverId], references: [id])
+  
+  // Message content
+  message      String
+  
+  // Timestamp of when the message was sent
+  createdAt    DateTime  @default(now())
+  
+  // Additional fields for real-time messaging
+  isRead       Boolean   @default(false) // Whether the message has been read by the receiver
+  isDelivered  Boolean   @default(false) // Whether the message has been delivered to the receiver's device
+}
+
+Model Contact {
+
+  id              Int      @id @default(autoincrement())
+ 
+  firstName       String
+
+  lastName       String
+
+  email             String
+
+  message          String
+  
+}
+
+
+
+Model JobMarket {
+  id                   Int         @id @default(autoincrement())
+  companyName          String
+  jobTitle             String
+  jobDescription       String
+  keyResponsibilities  String[]    // Array of key responsibilities
+  qualifications       String[]    // Array of qualifications
+  workArrangement      WorkArrangement
+  postedDate           DateTime
+  applicationUrl       String
+}
+
+Model Notification{
+
+  id           Int       @id @default(autoincrement())
+  
+  // Reference to the user who receives the notification
+  userId       String
+  user         User      @relation(fields: [userId], references: [id])
+  
+  // Notification content
+
+  message      String
+  
+  // Timestamp of when the notification was sent
+
+  createdAt    DateTime  @default(now())
+  
+  // Notification status (e.g., read/unread)
+  status       String    // You can define an enum or string type for status
+  
+  // Additional fields for notification type, priority, etc.
+
+  type         String    // Notification type (e.g., email, in-app, push)
+  priority     String    // Notification priority (e.g., high, medium, low)
+  
+  // Other fields as needed (e.g., link to related resource)
+
+  actionButtonLabel String?
+
+  actionButtonLink  String?
+
+  relatedResourceLink String?
+
+}
+
+Model PropertyMarket {
+  
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  price       Float
+  images      String[] // Array of image URLs
+  location    String
+  seller      User     @relation(fields: [sellerId], references: [id])
+  sellerId    String
+  postedBy    User     @relation(fields: [userId], references: [id])
+  userId      String
+  createdAt   DateTime @default(now())
+}
+
+Model Property {}
+
+Model Reminder {}
+
+Model Report {
+    id              Int      @id @default(autoincrement())
+ 
+    // Reference to the User model
+      userId           String
+      user             User         @relation(fields: [userId], references: [id])
+      // Report category enum type
+      reportCategory   String
+      // Report priority category enum type
+      reportPriority   String
+}
+
+
+
+
+
+Model Review {}
+
+Model Search {}
+
+
