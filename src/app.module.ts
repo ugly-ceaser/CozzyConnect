@@ -13,10 +13,13 @@ import { SearchModule } from './search/search.module';
 import { VerificationModule } from './verification/verification.module';
 import { ReportModule } from './report/report.module';
 import { NotificationModule } from './notification/notification.module';
+import { PrismaService } from './prisma/prisma.service';
+import { PrismaModule } from './prisma/prisma.module';
 
 
 @Module({
-  imports: [AuthModule, UserModule, ChatModule, ContactModule, HotDealModule, JobModule, MarketModule, PropertyModule, ReminderModule, ReviewModule, SearchModule, VerificationModule, ReportModule, NotificationModule],
+  imports: [AuthModule, UserModule, ChatModule, ContactModule, HotDealModule, JobModule, MarketModule, PropertyModule, ReminderModule, ReviewModule, SearchModule, VerificationModule, ReportModule, NotificationModule, PrismaModule],
+  providers: [PrismaService],
   
 })
 export class AppModule {}
