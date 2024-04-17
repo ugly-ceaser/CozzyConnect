@@ -3,7 +3,7 @@ import { AppModule } from '../src/app.module';
 import * as pactum from 'pactum'
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { PrismaService } from '../src/prisma/prisma.service';
-import { userLogDto, userRegDto } from '../src/dto';
+import { userEditDto, userLogDto, userRegDto } from '../src/dto';
 
 
 describe('App e2e',()=>{
@@ -103,7 +103,7 @@ describe('App e2e',()=>{
   describe('User',()=>{
     
 
-    describe('update user',()=>{
+    describe('user',()=>{
       it("should return corrent user",()=>{
         return pactum
         .spec()
@@ -116,8 +116,24 @@ describe('App e2e',()=>{
       });
     });
 
-    describe('delete user',()=>{
-      it.todo('should delete user')
+    describe('edit user',()=>{
+      it("should return corrent user",()=>{
+        const dto : userEditDto={
+          fullName:"martins",
+          email:"samplemail@gmail.com"
+        }
+        return pactum
+        .spec()
+        .patch('/users/update')
+        .withHeaders({
+          Authorization: 'Bearer $S{userAccessToken}',
+        })
+        .withBody(dto)
+        .expectStatus(200)
+        .expectBodyContains(dto.fullName)
+        .expectBodyContains(dto.email)
+        .inspect()
+      });
     })
   });
 
