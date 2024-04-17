@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { ChatModule } from './chat/chat.module';
@@ -15,10 +15,28 @@ import { ReportModule } from './report/report.module';
 import { NotificationModule } from './notification/notification.module';
 import { PrismaService } from './prisma/prisma.service';
 import { PrismaModule } from './prisma/prisma.module';
-
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [AuthModule, UserModule, ChatModule, ContactModule, HotDealModule, JobModule, MarketModule, PropertyModule, ReminderModule, ReviewModule, SearchModule, VerificationModule, ReportModule, NotificationModule, PrismaModule],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal:true
+    }),
+    AuthModule,
+     UserModule, 
+     ChatModule, 
+     ContactModule, 
+     HotDealModule, 
+     JobModule, 
+     MarketModule, 
+     PropertyModule, 
+     ReminderModule, 
+     ReviewModule, 
+     SearchModule, 
+     VerificationModule,
+     ReportModule, 
+     NotificationModule, 
+     PrismaModule],
   providers: [PrismaService],
   
 })
