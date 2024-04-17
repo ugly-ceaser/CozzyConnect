@@ -10,9 +10,10 @@ import * as randomString from 'randomstring';
 //import mail from "../services/nodemailer/sendEmail.js";
 //import NotificationStore from "../services/service.Notification.js";
 import { request } from "express";
-import { PrismaService } from "src/prisma/prisma.service";
+import { PrismaService } from "../prisma/prisma.service";
 import { userRegDto,userLogDto } from "src/dto";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { ConfigService } from '@nestjs/config';
 
 
 
@@ -20,8 +21,34 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 @Injectable()
 export class AuthService{
 
-    constructor(private prisma:PrismaService){}
+    constructor(
+        private prisma:PrismaService,
+        private jwt:JwtService,
+        private config:ConfigService
+    ){}
+    signToken =  async (
+        userId:string, 
+        email:string,
+    ): Promise<String>=>{
+        const payload ={
+            sub: userId,
+            email
+        }
+        const secret = this.config.get('JWT_SECRET');
     
+        try{
+        return await this.jwt.signAsync(payload,
+            {
+                expiresIn : '15m',
+                secret: secret
+            }
+        )
+        }catch(error){
+            throw error
+        }
+    
+    }
+
     async login(userLogDto:userLogDto){
         //retrieve info
 
@@ -44,17 +71,20 @@ export class AuthService{
         //compare password
 
         const pwMatch = await argon.verify(user.password,userLogDto.password)
+        console.log(pwMatch)
         if(!pwMatch){
             throw new ForbiddenException('Credentials Incorrect:password not martched')
         }
 
+       
+        const token = await this.signToken(user.id,user.email)
 
-        //return user
 
-        delete user.password
+      
 
-        return user
+       // console.log({access_token :token})
         
+        return{access_token :token}
     }
 
     async register(userRegDto:userRegDto){
@@ -80,12 +110,13 @@ export class AuthService{
         });
         
 
-        delete user.password
+       
+       
 
+        const token = await this.signToken(user.id,user.email)
 
+        return{access_token :token}
 
-        //return saved user
-        return user
         }catch(error){
             if(error instanceof PrismaClientKnownRequestError){
                 if(error.code === "P2002"){
