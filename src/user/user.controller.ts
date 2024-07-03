@@ -11,16 +11,14 @@ import { User } from '@prisma/client';
 import { Request } from 'express';
 import { GetUser } from '../auth/decorator';
 import { JWTGaurd } from '../auth/gaurd';
-import { userEditDto } from '../dto/editUser.dto';
+import { userEditDto } from '../dto/userDto/editUser.dto';
 import { UserService } from './user.service';
 
 
 @UseGuards(JWTGaurd)
 @Controller('users')
 export class UserController {
-    constructor(private userService:UserService){
-
-    }
+    constructor(private userService:UserService){}
    
    
     @Get('/profile')
@@ -30,14 +28,15 @@ export class UserController {
 
     
 
-    @Patch('/update')
+    @Patch('/update/:id')
     updateProfile(
         @GetUser('id')  userId:string,
-        @Body() dto:userEditDto
+        @Body() dto :userEditDto
     ){
 
         return this.userService.editUser(userId,dto)
     }
+    
 
    
 

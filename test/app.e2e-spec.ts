@@ -3,7 +3,7 @@ import { AppModule } from '../src/app.module';
 import * as pactum from 'pactum'
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { PrismaService } from '../src/prisma/prisma.service';
-import { userEditDto, userLogDto, userRegDto } from '../src/dto';
+import { userEditDto, userLogDto, userRegDto } from '../src/dto/userDto';
 
 
 describe('App e2e',()=>{
@@ -124,7 +124,7 @@ describe('App e2e',()=>{
         }
         return pactum
         .spec()
-        .patch('/users/update')
+        .patch('/users/update/:id')
         .withHeaders({
           Authorization: 'Bearer $S{userAccessToken}',
         })
