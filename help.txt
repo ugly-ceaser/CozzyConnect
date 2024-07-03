@@ -1,0 +1,63 @@
+{steps for creating new database 
+
+    Step 1: Create a New Database
+    Stop Docker Containers: If you haven't already, stop any running Docker containers related to your database.
+
+    bash
+    Copy code
+    docker-compose down
+    Remove Old Database: Remove the old database volume if it still exists. This ensures that you have a fresh start.
+
+    bash
+    Copy code
+    docker volume ls
+    docker volume rm <volume_name>
+    Create a New Database: Start a new database container with a fresh volume.
+
+    bash
+    Copy code
+    docker-compose up -d
+    Step 2: Regenerate Prisma Client
+    Generate Prisma Client: Since you deleted the migration files and changed the database, you need to regenerate the Prisma client.
+
+    bash
+    Copy code
+    npx prisma generate
+    Step 3: Create Initial Migration
+    Create Initial Migration: Create an initial migration to sync your Prisma schema with the new database.
+
+    bash
+    Copy code
+    npx prisma migrate dev --name init
+    This command will generate a new migration script based on your current Prisma schema and apply it to the database.
+
+    Step 4: Apply Migration
+    Apply Migration: Run the migration to apply the changes to your database.
+
+    bash
+    Copy code
+    npx prisma migrate deploy
+    Step 5: Seed Initial Data (if necessary)
+    Seed Initial Data: If your application relies on initial data to function properly, you might need to seed the database.
+
+    bash
+    Copy code
+    npx prisma db seed --preview-feature
+    Step 6: Verify Prisma Setup
+    Run Prisma Studio: Open Prisma Studio to verify that your database has been properly set up and contains the expected tables and data.
+
+    bash
+    Copy code
+    npx prisma studio
+    Step 7: Restart Your Application
+    Restart Your NestJS Application: Restart your NestJS application to ensure that it connects to the new database.
+
+    bash
+    Copy code
+    npm run start:dev
+    or
+
+    bash
+    Copy code
+    yarn start:dev
+}

@@ -1,22 +1,50 @@
-import { Body, Controller,HttpCode,HttpStatus,Post } from "@nestjs/common";
+import { Body, Controller,HttpCode,HttpStatus,Post,Get, Param } from "@nestjs/common";
 import { AuthService } from "./auth.service";
-import { userRegDto,userLogDto } from "../dto";
+import { userRegDto,userLogDto, otpDto, userEditDto,passDto } from "../dto/userDto";
+import { GetUser } from "./decorator";
 
 @Controller('auth')
 export class AuthController{
-    constructor(private authservice : AuthService){}
+    constructor(private authservice : AuthService){
+    }
+    
 
     @HttpCode(HttpStatus.OK)
     @Post('login')
-    login(@Body() userLogDto:userLogDto){
+    login(@Body() userLogDto:userLogDto)
+    {
 
         return this.authservice.login(userLogDto)
     }
 
+
+    @Post('verify/email')
+    verifyEmial(@Body() Dto:otpDto){
+
+        return this.authservice.verifyEmail(Dto)
+
+    }
+
+ 
+
     
     @Post('register')
-    register(@Body() userRegDto:userRegDto){
+    register(@Body() userRegDto:userRegDto)
+    {
         return this.authservice.register(userRegDto)
     }
+
+    
+
+    @Post('fpwd/:id')
+    forgotPassword(
+        @Body() dto: passDto,
+        @Param('id') userId: string 
+    ) {
+        return this.authservice.updatePass(userId, dto);
+    }
+    
+
+   
 
 }

@@ -1,19 +1,18 @@
-import { ForbiddenException, Injectable } from "@nestjs/common";
+import { ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
 import { v4 as uuidv4 } from "uuid";
-import dotenv from "dotenv";
-import moment from "moment";
-import { AsyncHandlerMiddleware } from '../middleware/asyn';
-import {ErrorResponse} from "../utils/index";
 import * as argon from 'argon2'
 import { JwtService } from '@nestjs/jwt';
-import * as randomString from 'randomstring';
 //import mail from "../services/nodemailer/sendEmail.js";
 //import NotificationStore from "../services/service.Notification.js";
 import { request } from "express";
 import { PrismaService } from "../prisma/prisma.service";
-import { userRegDto,userLogDto } from "src/dto";
+import { userRegDto,userLogDto, otpDto, userEditDto, passDto } from "src/dto/userDto";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { ConfigService } from '@nestjs/config';
+import {MailService} from '../maileServices/mail.service';
+import { OtpService } from "../otp/otp.service";
+import { use } from "passport";
+import { error } from "console";
 
 
 
@@ -24,8 +23,12 @@ export class AuthService{
     constructor(
         private prisma:PrismaService,
         private jwt:JwtService,
-        private config:ConfigService
+        private config:ConfigService,
+        private mailSender : MailService,
+        private otpGen: OtpService
     ){}
+
+
     signToken =  async (
         userId:string, 
         email:string,
@@ -39,7 +42,7 @@ export class AuthService{
         try{
         return await this.jwt.signAsync(payload,
             {
-                expiresIn : '15m',
+                expiresIn : '60m',
                 secret: secret
             }
         )
@@ -49,7 +52,10 @@ export class AuthService{
     
     }
 
-    async login(userLogDto:userLogDto){
+    
+
+    async login(userLogDto:userLogDto)
+    {
         //retrieve info
 
         const emailOrPhoneNumber = userLogDto.EmailOrPhoneNumber;
@@ -80,26 +86,70 @@ export class AuthService{
         const token = await this.signToken(user.id,user.email)
 
 
-      
-
-       // console.log({access_token :token})
         
-        return{access_token :token}
+
+       
+        
+        return{
+            data:user,
+            access_token :token}
     }
 
-    async register(userRegDto:userRegDto){
+
+    async verifyEmail(Dto: otpDto){
+
+        const findUser = await this.prisma.user.findFirst({
+                  where:{
+                    email :Dto.email
+                  }
+        })
+    
+        if(!findUser){
+          throw new ForbiddenException('Credential Incorrect:Email  not found');
+        }
+    
+        if(findUser.tempToken !== Dto.otp){
+    
+          throw new ForbiddenException('Credential Incorrect:Otp mis-match');
+    
+        }
+        
+        const user = await this.prisma.user.update({
+          where:{
+            email : findUser.email
+    
+            
+          },
+          data:{
+            isEmailVerified : true
+          }
+        })
+    
+        if(!user){
+    
+          return {message:"user not found", status:false}
+        }
+        
+        
+        return { message:"success",status:true }
+      }
+
+    async register(userRegDto:userRegDto)
+    {
         //generate password
         
         const hashedPwd = await argon.hash(userRegDto.password)
+
+       
 
         //save new user in the db
         try{
         const user = await this.prisma.user.create({
            data:{
-            fullName :userRegDto.fullName,
+            fullName : " ",
             email : userRegDto.email,
             password:hashedPwd ,
-            phoneNumber: userRegDto.phoneNumber,
+            phoneNumber: " ",
             isVerified:false,
             profilePicture:"sample.jpj"
             
@@ -115,7 +165,15 @@ export class AuthService{
 
         const token = await this.signToken(user.id,user.email)
 
-        return{access_token :token}
+        const mailFeedback = await  this.mailSender.sendEmail(user.email,"Welcome","434434534");
+
+        // const optFeedback = await this.otpGen.generateAndSaveOtp(userRegDto.email)
+
+        
+
+        return{
+            data : user,
+            access_token :token}
 
         }catch(error){
             if(error instanceof PrismaClientKnownRequestError){
@@ -128,4 +186,40 @@ export class AuthService{
 
         }
     }
+
+
+
+    async updatePass(userId: string, dto: passDto) {
+
+        console.log(userId)
+        if (dto.password !== dto.confirm_password) {
+            throw new ForbiddenException('Credential Incorrect: Passwords do not match');
+        }
+    
+        const hashedPwd = await argon.hash(dto.password);
+    
+        try {
+            const user = await this.prisma.user.update({
+                where: { id: userId }, // Pass the userId here
+                data: {
+                    password: hashedPwd,
+                },
+            });
+    
+            if (!user) {
+                throw new NotFoundException('User not found or update operation failed');
+            }
+    
+            delete user.password;
+    
+            return user;
+        } catch (error) {
+            // Handle specific database errors if necessary
+            throw new Error(`Failed to update password: ${error.message}`);
+        }
+    }
+    
+   
+
+    
 }
