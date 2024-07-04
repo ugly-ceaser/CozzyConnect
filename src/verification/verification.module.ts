@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
-import { VerificationController } from './verification.controller';
 import { VerificationService } from './verification.service';
+import { VerificationController } from './verification.controller';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Module({
   controllers: [VerificationController],
-  providers: [VerificationService]
+  providers: [VerificationService, PrismaService],
 })
 export class VerificationModule {}

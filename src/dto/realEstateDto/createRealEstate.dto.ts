@@ -2,7 +2,6 @@ import { IsString, IsInt, IsArray, IsNotEmpty, IsDateString, ArrayMinSize, IsOpt
 
 export class CreateRealEstateDto {
   @IsString()
-  @IsNotEmpty()
   @IsOptional()
   userId: string;
 

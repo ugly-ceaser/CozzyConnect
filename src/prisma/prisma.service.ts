@@ -31,6 +31,7 @@ export class PrismaService extends PrismaClient {
             this.jobMarket.deleteMany(), // Deletes all records from the `jobMarket` table
             this.realEstate.deleteMany(), // Deletes all records from the `realEstate` table
             this.user.deleteMany(), // Deletes all records from the `user` table
+            this.userKyc.deleteMany(),
             // Add more deleteMany calls for other tables if needed
         ]);
     }

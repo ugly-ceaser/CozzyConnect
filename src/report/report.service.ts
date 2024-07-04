@@ -1,24 +1,49 @@
-// src/report/report.service.ts
-
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { ReportDto } from '../dto/reportDto/createReportDto'; // Ensure you have a ReportDto
+import { CreateReportDto, UpdateReportDto } from '../dto/reportDto/';
 
 @Injectable()
 export class ReportService {
   constructor(private prisma: PrismaService) {}
+ 
+  async create(createReportDto: CreateReportDto) {
 
-  async createReport(createReportDto: ReportDto, userId: string) {
-    const { reportCategory, reportPriority, reportableId, reportableType } = createReportDto;
-
+    const { userId, ...rest } = createReportDto;
     return this.prisma.report.create({
-      data: {
-        userId,
-        reportCategory,
-        reportPriority,
-        reportableId: reportableId.toString(), // Convert to string if needed
-        reportableType,
-      },
+      data:{
+
+        ...rest,
+        user: { connect: { id: userId } },
+        
+
+      }
+    });
+  }
+
+  async findAll() {
+    return this.prisma.report.findMany();
+  }
+
+  async findOne(id: number) {
+    const report = await this.prisma.report.findUnique({
+      where: { id },
+    });
+    if (!report) {
+      throw new NotFoundException(`Report with ID ${id} not found`);
+    }
+    return report;
+  }
+
+  async update(id: number, updateReportDto: UpdateReportDto) {
+    return this.prisma.report.update({
+      where: { id },
+      data: updateReportDto,
+    });
+  }
+
+  async remove(id: number) {
+    return this.prisma.report.delete({
+      where: { id },
     });
   }
 }

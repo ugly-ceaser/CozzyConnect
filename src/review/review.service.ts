@@ -88,16 +88,25 @@ export class ReviewService {
     }
   }
 
-  async getReviewsForRealEstate(realEstateId: number, page: number, limit: number): Promise<Review[]> {
+  async getReviewsForRealEstate(realEstateId:number, page: number = 1, limit: number = 10): Promise<{ data: Review[], total: number, page: number, limit: number }> {
     const offset = (page - 1) * limit;
     try {
-      return await this.prisma.review.findMany({
-        where: {
-          realEstateId,
-        },
-        skip: offset,
-        take: limit,
-      });
+      const [data, total] = await this.prisma.$transaction([
+        this.prisma.review.findMany({
+          where: {
+            realEstateId,
+          },
+          skip: offset,
+          take: limit,
+        }),
+        this.prisma.review.count({
+          where: {
+            realEstateId,
+          },
+        }),
+      ]);
+
+      return { data, total, page, limit };
     } catch (e) {
       console.error('Error fetching reviews for real estate:', e);
       throw new Error('Could not fetch reviews for real estate');
