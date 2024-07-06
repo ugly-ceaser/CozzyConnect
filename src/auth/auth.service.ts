@@ -146,10 +146,8 @@ export class AuthService{
         try{
         const user = await this.prisma.user.create({
            data:{
-            fullName : " ",
             email : userRegDto.email,
             password:hashedPwd ,
-            phoneNumber: " ",
             isVerified:false,
             profilePicture:"sample.jpj"
             

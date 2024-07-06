@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Post, Patch, Delete, Body, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Post, Patch, Delete, Body, Query, UseGuards, ParseIntPipe, BadRequestException } from '@nestjs/common';
 import { JWTGaurd } from '../auth/gaurd';
 import { ReviewService } from './review.service';
 import { CreateReviewDto } from '../dto/reviewDto/createReviewDto';
@@ -17,7 +17,7 @@ export class ReviewController {
 
   @Patch(':id')
   updateReview(
-    @Param('id') reviewId: number,
+    @Param('id', ParseIntPipe) reviewId: number,
     @GetUser('id') userId: string,
     @Body() updateReviewDto: UpdateReviewDto,
   ) {
@@ -25,16 +25,19 @@ export class ReviewController {
   }
 
   @Delete(':id')
-  deleteReview(@Param('id') reviewId: number, @GetUser('id') userId: string) {
+  deleteReview(@Param('id', ParseIntPipe) reviewId: number, @GetUser('id') userId: string) {
     return this.reviewService.delete(reviewId, userId);
   }
 
   @Get('real-estate/:id')
   getReviewsForRealEstate(
-    @Param('id') realEstateId: number,
-    @Query('page') page: number = 1,
-    @Query('limit') limit: number = 10,
+    @Param('id', ParseIntPipe) realEstateId: number,
+    @Query('page', ParseIntPipe) page: number = 1,
+    @Query('limit', ParseIntPipe) limit: number = 10,
   ) {
+    if (isNaN(page) || isNaN(limit) || page <= 0 || limit <= 0) {
+      throw new BadRequestException('Invalid page or limit parameter');
+    }
     return this.reviewService.getReviewsForRealEstate(realEstateId, page, limit);
   }
 }

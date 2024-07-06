@@ -13,7 +13,6 @@ import { SearchModule } from './search/search.module';
 import { VerificationModule } from './verification/verification.module';
 import { ReportModule } from './report/report.module';
 import { NotificationModule } from './notification/notification.module';
-
 import { PrismaModule } from './prisma/prisma.module';
 import { ConfigModule } from '@nestjs/config';
 import { PrismaService } from './prisma/prisma.service';
@@ -22,6 +21,7 @@ import { OtpService } from './otp/otp.service';
 import { MailService } from './maileServices/mail.service';
 import { OtpController } from './otp/otp.controller';
 import { UtilsService } from './utils/utils.service';
+import { ChatService } from './chat/chat.service';
 
 
 @Module({
@@ -44,7 +44,7 @@ import { UtilsService } from './utils/utils.service';
      ReportModule, 
      NotificationModule, 
      PrismaModule],
-  providers: [PrismaService, MiddlewareService, OtpService,MailService, UtilsService],
+  providers: [PrismaService, MiddlewareService, OtpService,MailService, UtilsService, ChatService],
   controllers: [OtpController],
   
 })

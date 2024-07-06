@@ -1,18 +1,23 @@
-import { IsInt, IsString, IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-export class ReportDto {
-  @IsInt()
-  reportableId: number;
-
-  @IsString()
+export class CreateReportDto {
   @IsNotEmpty()
-  reportableType: string;
-
   @IsString()
-  @IsNotEmpty()
   reportCategory: string;
 
+  userId?         : string
+
+  @IsOptional()
   @IsString()
+  comment?: string;
+
   @IsNotEmpty()
+  @IsString()
   reportPriority: string;
+
+ 
+
+  @IsNotEmpty()
+  @IsString()
+  reportableType: string;
 }
