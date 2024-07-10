@@ -27,6 +27,8 @@ export class VerificationService {
         isVerified : true
       }
     })
+
+    return user;
   }
 
   async findOne(userId: string) {
