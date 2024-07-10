@@ -1,28 +1,18 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, BadRequestException } from '@nestjs/common';
 import { OtpService } from './otp.service';
-
-import {otpDto} from '../dto/userDto'
-
+import { otpDto } from '../dto/userDto';
 
 @Controller('otp')
 export class OtpController {
-    constructor(private otpService : OtpService){}
+  constructor(private otpService: OtpService) {}
 
-    @Post('request')
-    request(@Body() dto : otpDto){
-        
-        return this.otpService.requestOtp(dto)
-
+  @Post('request')
+  async request(@Body() dto: otpDto) {
+    if (!dto.email && !dto.phoneNumber) {
+      throw new BadRequestException('Either email or phone number must be provided');
     }
+    return this.otpService.requestOtp(dto);
+  }
 
-
-    @Post('verify')
-    verifyOtp( @Body() dto :otpDto ){
-
-        return this.otpService.verifyOtp(dto)
-    }
-
-  
-
-    
+ 
 }

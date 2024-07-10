@@ -14,5 +14,10 @@ export class otpDto {
     @IsOptional()
     otp?: string;
 
+    
+    @IsString()
+    @IsNotEmpty()
+    dataVerified: string;
+
    
 }
