@@ -134,6 +134,47 @@ export class AuthService{
         return { message:"success",status:true }
       }
 
+
+      async verifyPhone(Dto: otpDto){
+
+        const findUser = await this.prisma.user.findFirst({
+                  where:{
+                    email :Dto.email
+                  }
+        })
+    
+        if(!findUser){
+          throw new ForbiddenException('Credential Incorrect:Email  not found');
+        }
+    
+        if(findUser.tempToken !== Dto.otp){
+    
+          throw new ForbiddenException('Credential Incorrect:Otp mis-match');
+    
+        }
+        
+        const user = await this.prisma.user.update({
+          where:{
+            email : findUser.email
+    
+            
+          },
+          data:{
+            isEmailVerified : true,
+            phoneNumber: Dto.phoneNumber,
+            isNumberVerified:true,
+          }
+        })
+    
+        if(!user){
+    
+          return {message:"user not found", status:false}
+        }
+        
+        
+        return { message:"success",status:true }
+      }
+
     async register(userRegDto:userRegDto)
     {
         //generate password

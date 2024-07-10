@@ -22,6 +22,8 @@ import { MailService } from './maileServices/mail.service';
 import { OtpController } from './otp/otp.controller';
 import { UtilsService } from './utils/utils.service';
 import { ChatService } from './chat/chat.service';
+import { SmsService } from './sms/sms.service';
+
 
 
 @Module({
@@ -44,7 +46,7 @@ import { ChatService } from './chat/chat.service';
      ReportModule, 
      NotificationModule, 
      PrismaModule],
-  providers: [PrismaService, MiddlewareService, OtpService,MailService, UtilsService, ChatService],
+  providers: [PrismaService, MiddlewareService, OtpService,MailService, UtilsService, ChatService, SmsService],
   controllers: [OtpController],
   
 })

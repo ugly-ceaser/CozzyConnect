@@ -9,13 +9,24 @@ export class VerificationService {
   async create(createUserKycDto: CreateUserKycDto) {
 
     const { userId, ...rest } = createUserKycDto;
-    return this.prisma.userKyc.create({
+    const kyc = this.prisma.userKyc.create({
       data: {
         ...rest,
         user: { connect: { id: userId } },
         
       },
     });
+
+    const user = await this.prisma.user.update({
+      where:{
+        id : userId
+
+        
+      },
+      data:{
+        isVerified : true
+      }
+    })
   }
 
   async findOne(userId: string) {

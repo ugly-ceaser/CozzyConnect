@@ -25,6 +25,15 @@ export class AuthController{
 
     }
 
+
+
+    @Post('verify/phone')
+    verifyPhoneNumber(@Body() Dto:otpDto){
+
+        return this.authservice.verifyPhone(Dto)
+
+    }
+
  
 
     
