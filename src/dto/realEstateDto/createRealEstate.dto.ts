@@ -7,6 +7,10 @@ export class CreateRealEstateDto {
 
   @IsString()
   @IsNotEmpty()
+  houseName: string;
+
+  @IsString()
+  @IsNotEmpty()
   category: string;
 
   @IsInt()
@@ -30,6 +34,8 @@ export class CreateRealEstateDto {
   @IsString()
   @IsNotEmpty()
   state: string;
+
+  
 
   @IsString()
   @IsNotEmpty()
