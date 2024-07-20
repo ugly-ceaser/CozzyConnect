@@ -21,94 +21,66 @@ export class ReviewService {
           propertyPictures,
         },
       });
-
       return review;
-    } catch (e) {
-      console.error('Error creating review:', e);
+    } catch (error) {
+      console.error('Error creating review:', error);
       throw new Error('Could not create review');
     }
   }
 
   async update(reviewId: number, userId: string, updateReviewDto: UpdateReviewDto): Promise<Review> {
     try {
-      const review = await this.prisma.review.findUnique({
-        where: {
-          id: reviewId,
-        },
-      });
-
+      const review = await this.prisma.review.findUnique({ where: { id: reviewId } });
       if (!review) {
         throw new NotFoundException(`Review with ID ${reviewId} not found`);
       }
-
       if (review.userId !== userId) {
         throw new ForbiddenException(`You are not allowed to update this review`);
       }
-
       return await this.prisma.review.update({
-        where: {
-          id: reviewId,
-        },
+        where: { id: reviewId },
         data: {
           rating: updateReviewDto.rating,
           comment: updateReviewDto.comment,
           propertyPictures: updateReviewDto.propertyPictures,
         },
       });
-    } catch (e) {
-      console.error('Error updating review:', e);
+    } catch (error) {
+      console.error('Error updating review:', error);
       throw new Error('Could not update review');
     }
   }
 
   async delete(reviewId: number, userId: string): Promise<Review> {
     try {
-      const review = await this.prisma.review.findUnique({
-        where: {
-          id: reviewId,
-        },
-      });
-
+      const review = await this.prisma.review.findUnique({ where: { id: reviewId } });
       if (!review) {
         throw new NotFoundException(`Review with ID ${reviewId} not found`);
       }
-
       if (review.userId !== userId) {
         throw new ForbiddenException(`You are not allowed to delete this review`);
       }
-
-      return await this.prisma.review.delete({
-        where: {
-          id: reviewId,
-        },
-      });
-    } catch (e) {
-      console.error('Error deleting review:', e);
+      return await this.prisma.review.delete({ where: { id: reviewId } });
+    } catch (error) {
+      console.error('Error deleting review:', error);
       throw new Error('Could not delete review');
     }
   }
 
-  async getReviewsForRealEstate(realEstateId:number, page: number = 1, limit: number = 10): Promise<{ data: Review[], total: number, page: number, limit: number }> {
+  async getReviewsForRealEstate(realEstateId: number, page: number = 1, limit: number = 10): Promise<{ data: Review[], total: number, page: number, limit: number }> {
     const offset = (page - 1) * limit;
     try {
       const [data, total] = await this.prisma.$transaction([
         this.prisma.review.findMany({
-          where: {
-            realEstateId,
-          },
+          where: { realEstateId },
           skip: offset,
           take: limit,
         }),
-        this.prisma.review.count({
-          where: {
-            realEstateId,
-          },
-        }),
+        this.prisma.review.count({ where: { realEstateId } }),
       ]);
-
       return { data, total, page, limit };
-    } catch (e) {
-      console.error('Error fetching reviews for real estate:', e);
+    } catch (error) {
+      console.error('Error fetching reviews for real estate:', error);
       throw new Error('Could not fetch reviews for real estate');
     }
   }
