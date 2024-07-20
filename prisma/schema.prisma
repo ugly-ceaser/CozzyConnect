@@ -40,6 +40,20 @@ model User {
   @@map("users")
 }
 
+model UserInfo{
+  id                  String     @id @default(uuid())
+  fullName            String
+  profilePicture      String
+  address             String
+  userType            String
+  
+ 
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
+  @@map("usersinfo")
+
+}
+
 model UserKyc {
   id              Int     @id @default(autoincrement())
   userId          String  @unique
@@ -61,6 +75,7 @@ model RealEstate {
   id                 Int      @id @default(autoincrement())
   userId             String
   user               User     @relation(fields: [userId], references: [id])
+  houseName          String?
   
   category           String
   numberOfRooms      Int

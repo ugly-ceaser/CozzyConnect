@@ -6,6 +6,10 @@ export class UpdateRealEstateDto {
   category?: string;
 
   @IsOptional()
+  @IsString()
+  houseName?:string
+
+  @IsOptional()
   @IsInt()
   numberOfRooms?: number;
 
