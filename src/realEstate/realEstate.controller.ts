@@ -1,6 +1,6 @@
 import { Controller, Get, Param, Post, Patch, Delete, Body, UseGuards, Query, ParseIntPipe, BadRequestException } from '@nestjs/common';
 import { JWTGaurd } from '../auth/gaurd';
-import {  realEstateService } from './realEstate.service';
+import { RealEstateService } from './realEstate.service';
 import { GetUser } from '../auth/decorator/get-user-decorator';
 import { CreateRealEstateDto, UpdateRealEstateDto, ReplaceRealEstateImgDto } from '../dto/realEstateDto/index';
 
@@ -9,7 +9,7 @@ import { CreateRealEstateDto, UpdateRealEstateDto, ReplaceRealEstateImgDto } fro
 export class RealEstateController {
 
     constructor(
-        private realEstateService: realEstateService
+        private RealEstateService: RealEstateService
     ){}
 
     @Post('/')
@@ -18,7 +18,7 @@ export class RealEstateController {
         @GetUser('id') userId: string
     ){
         createRealEstateDto.userId = userId;
-        return this.realEstateService.create(createRealEstateDto);
+        return this.RealEstateService.create(createRealEstateDto);
     }
     
     @Get('/')
@@ -31,7 +31,7 @@ export class RealEstateController {
             throw new BadRequestException('Invalid page or limit parameter');
         }
 
-        return await this.realEstateService.findAll(userId, { page, limit });
+        return await this.RealEstateService.findAll(userId, { page, limit });
     }
 
     @Get(':id')
@@ -39,7 +39,7 @@ export class RealEstateController {
         @GetUser('id') userId: string,
         @Param('id', ParseIntPipe) propertyId: number
     ){
-        return this.realEstateService.findOne(userId, propertyId);
+        return this.RealEstateService.findOne(userId, propertyId);
     }
 
     @Patch(':id')
@@ -48,7 +48,7 @@ export class RealEstateController {
         @Param('id', ParseIntPipe) propertyId: number,
         @Body() updateRealEstateDto: UpdateRealEstateDto
     ){
-        return this.realEstateService.update(userId, propertyId, updateRealEstateDto);
+        return this.RealEstateService.update(userId, propertyId, updateRealEstateDto);
     }
 
     @Delete(':id')
@@ -56,7 +56,7 @@ export class RealEstateController {
         @GetUser('id') userId: string,
         @Param('id', ParseIntPipe) propertyId: number
     ){
-        return this.realEstateService.remove(userId, propertyId);
+        return this.RealEstateService.remove(userId, propertyId);
     }
 
     @Patch(':id/replace-image')
@@ -65,7 +65,7 @@ export class RealEstateController {
         @Param('id', ParseIntPipe) propertyId: number,
         @Body() replaceImageDto: ReplaceRealEstateImgDto
     ){
-        return this.realEstateService.replaceImage(userId, propertyId, replaceImageDto);
+        return this.RealEstateService.replaceImage(userId, propertyId, replaceImageDto);
     }
 
     // Additional possible controllers can be added here
