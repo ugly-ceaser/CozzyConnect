@@ -13,7 +13,7 @@ export class NotFoundFilter implements ExceptionFilter {
       statusCode: status,
       timestamp: new Date().toISOString(),
       path: request.url,
-      message: 'Route not found',
+      message: 'Route not found but server is live now',
     });
   }
 }
