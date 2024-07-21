@@ -6,6 +6,7 @@ import { IoAdapter } from '@nestjs/platform-socket.io';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { Socket } from 'socket.io';
+import { NotFoundFilter } from './not-found.filter'; // Import the filter
 
 class JwtIoAdapter extends IoAdapter {
   constructor(private readonly jwtService: JwtService, private readonly configService: ConfigService) {
@@ -48,6 +49,10 @@ async function bootstrap() {
       whitelist: true,
     }),
   );
+
+  // Apply the global exception filter
+  app.useGlobalFilters(new NotFoundFilter());
+
   await app.listen(3000);
 }
 
