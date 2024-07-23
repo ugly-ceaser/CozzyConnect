@@ -22,10 +22,10 @@ export class AuthService {
     signToken = async (userId: string, email: string): Promise<string> => {
         const payload = { sub: userId, email };
         const secret = this.config.get('JWT_SECRET');
-
+    
         try {
             return await this.jwt.signAsync(payload, {
-                expiresIn: '60m',
+                expiresIn: '7d', // Set the token expiration to 7 days
                 secret: secret
             });
         } catch (error) {
@@ -33,6 +33,7 @@ export class AuthService {
             throw error;
         }
     };
+    
 
     async login(userLogDto: userLogDto) {
         const emailOrPhoneNumber = userLogDto.EmailOrPhoneNumber;

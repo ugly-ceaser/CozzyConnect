@@ -28,7 +28,7 @@ export class UserController {
 
     
 
-    @Patch('/update/:id')
+    @Patch('/update/')
     updateProfile(
         @GetUser('id')  userId:string,
         @Body() dto :userEditDto
