@@ -4,7 +4,7 @@ import { UserModule } from './user/user.module';
 import { ChatModule } from './chat/chat.module';
 import { ContactModule } from './contact/contact.module';
 import { HotDealModule } from './hot-deal/hot-deal.module';
-import { JobModule } from './job/job.module';
+import { JobMarketModule } from './job/job.module';
 import { MarketModule } from './market/market.module';
 import { RealEstateModule } from './realEstate/realEstate.module';
 import { ReminderModule } from './reminder/reminder.module';
@@ -36,7 +36,7 @@ import { SmsService } from './sms/sms.service';
      ChatModule, 
      ContactModule, 
      HotDealModule, 
-     JobModule, 
+     JobMarketModule, 
      MarketModule, 
      RealEstateModule, 
      ReminderModule, 

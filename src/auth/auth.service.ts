@@ -3,11 +3,12 @@ import { v4 as uuidv4 } from "uuid";
 import * as argon from 'argon2';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from "../prisma/prisma.service";
-import { userRegDto, userLogDto, otpDto, userEditDto, passDto } from "src/dto/userDto";
+import { userRegDto, userLogDto, otpDto, userEditDto, passDto,ForgotPasswordDto  } from "src/dto/userDto";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { ConfigService } from '@nestjs/config';
 import { MailService } from '../maileServices/mail.service';
 import { OtpService } from "../otp/otp.service";
+
 
 @Injectable()
 export class AuthService {
@@ -177,4 +178,6 @@ export class AuthService {
             throw new Error(`Failed to update password: ${error.message}`);
         }
     }
+
+   
 }
