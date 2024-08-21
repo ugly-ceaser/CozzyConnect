@@ -1,34 +1,54 @@
-// src/dto/userDto.ts
+import { IsEmail, IsString, MinLength, IsOptional } from 'class-validator';
 
 export class userRegDto {
-    email: string;
-    password: string;
-    // Add other fields as needed
-  }
-  
-  export class userLogDto {
-    EmailOrPhoneNumber: string;
-    password: string;
-  }
+  @IsEmail()
+  email: string;
 
-  
-  export class passDto {
-    password: string;
-    confirm_password: string;
-  }
-  
-  export class ForgotPasswordDto {
-    email: string;
-  }
-  
+  @IsString()
+  @MinLength(6)
+  password: string;
+}
 
-  export class ResetPasswordDto {
-    token: string;
-    newPassword: string;
-  }
+export class userLogDto {
+  @IsString()
+  EmailOrPhoneNumber: string;
 
-  export class EditAuthtDto {
-    email?: string; // Use TypeScript's optional chaining
-    phoneNumber?: string;
-   
+  @IsString()
+  @MinLength(6)
+  password: string;
+}
+
+export class passDto {
+  @IsString()
+  @MinLength(6)
+  password: string;
+
+  @IsString()
+  @MinLength(6)
+  confirm_password: string;
+}
+
+export class ForgotPasswordDto {
+  @IsEmail()
+  email: string;
+}
+
+export class ResetPasswordDto {
+  @IsString()
+  token: string;
+
+  @IsString()
+  @MinLength(6)
+  newPassword: string;
+}
+
+export class EditAuthtDto {
+  @IsOptional()
+  @IsEmail()
+  email?: string;
+
+  @IsOptional()
+  @IsString()
+  @MinLength(10)
+  phoneNumber?: string;
 }

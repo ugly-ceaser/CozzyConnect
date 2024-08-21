@@ -40,6 +40,7 @@ export class AuthController{
     @Post('register')
     register(@Body() userRegDto:userRegDto)
     {
+        console.log(`user reg: ${userRegDto.password}`)
         return this.authservice.register(userRegDto)
     }
 
