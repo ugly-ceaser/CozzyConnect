@@ -2,10 +2,8 @@
 CREATE TABLE "users" (
     "id" TEXT NOT NULL,
     "email" TEXT NOT NULL,
-    "phoneNumber" TEXT NOT NULL,
-    "fullName" TEXT NOT NULL,
+    "phoneNumber" TEXT,
     "password" TEXT NOT NULL,
-    "profilePicture" TEXT NOT NULL,
     "isVerified" BOOLEAN NOT NULL DEFAULT false,
     "isEmailVerified" BOOLEAN DEFAULT false,
     "isNumberVerified" BOOLEAN DEFAULT false,
@@ -17,10 +15,24 @@ CREATE TABLE "users" (
 );
 
 -- CreateTable
+CREATE TABLE "usersinfo" (
+    "id" TEXT NOT NULL,
+    "fullName" TEXT NOT NULL,
+    "profilePicture" TEXT NOT NULL,
+    "address" TEXT NOT NULL,
+    "userType" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "usersinfo_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "UserKyc" (
     "id" SERIAL NOT NULL,
     "userId" TEXT NOT NULL,
-    "passportPhoto" TEXT NOT NULL,
+    "passportPhoto" TEXT[],
     "idType" TEXT NOT NULL,
     "idFrontImage" TEXT NOT NULL,
     "idBackImage" TEXT NOT NULL,
@@ -36,6 +48,7 @@ CREATE TABLE "UserKyc" (
 CREATE TABLE "properties" (
     "id" SERIAL NOT NULL,
     "userId" TEXT NOT NULL,
+    "houseName" TEXT,
     "category" TEXT NOT NULL,
     "numberOfRooms" INTEGER NOT NULL,
     "pictures" TEXT[],
@@ -69,8 +82,8 @@ CREATE TABLE "reports" (
     "id" SERIAL NOT NULL,
     "userId" TEXT NOT NULL,
     "reportCategory" TEXT NOT NULL,
+    "comment" TEXT,
     "reportPriority" TEXT NOT NULL,
-    "reportableId" TEXT NOT NULL,
     "reportableType" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -175,6 +188,31 @@ CREATE TABLE "searches" (
     CONSTRAINT "searches_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "Admin" (
+    "id" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Admin_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Role" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+
+    CONSTRAINT "Role_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "_AdminRoles" (
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
@@ -182,10 +220,28 @@ CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 CREATE UNIQUE INDEX "users_phoneNumber_key" ON "users"("phoneNumber");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "usersinfo_userId_key" ON "usersinfo"("userId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "UserKyc_userId_key" ON "UserKyc"("userId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "reviews_userId_realEstateId_key" ON "reviews"("userId", "realEstateId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Admin_email_key" ON "Admin"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Role_name_key" ON "Role"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "_AdminRoles_AB_unique" ON "_AdminRoles"("A", "B");
+
+-- CreateIndex
+CREATE INDEX "_AdminRoles_B_index" ON "_AdminRoles"("B");
+
+-- AddForeignKey
+ALTER TABLE "usersinfo" ADD CONSTRAINT "usersinfo_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "UserKyc" ADD CONSTRAINT "UserKyc_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -222,3 +278,9 @@ ALTER TABLE "reminders" ADD CONSTRAINT "reminders_userId_fkey" FOREIGN KEY ("use
 
 -- AddForeignKey
 ALTER TABLE "searches" ADD CONSTRAINT "searches_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_AdminRoles" ADD CONSTRAINT "_AdminRoles_A_fkey" FOREIGN KEY ("A") REFERENCES "Admin"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_AdminRoles" ADD CONSTRAINT "_AdminRoles_B_fkey" FOREIGN KEY ("B") REFERENCES "Role"("id") ON DELETE CASCADE ON UPDATE CASCADE;

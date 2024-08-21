@@ -4,7 +4,7 @@ import { UserModule } from './user/user.module';
 import { ChatModule } from './chat/chat.module';
 import { ContactModule } from './contact/contact.module';
 import { HotDealModule } from './hot-deal/hot-deal.module';
-import { JobModule } from './job/job.module';
+import { JobMarketModule } from './job/job.module';
 import { MarketModule } from './market/market.module';
 import { RealEstateModule } from './realEstate/realEstate.module';
 import { ReminderModule } from './reminder/reminder.module';
@@ -23,6 +23,7 @@ import { OtpController } from './otp/otp.controller';
 import { UtilsService } from './utils/utils.service';
 import { ChatService } from './chat/chat.service';
 import { SmsService } from './sms/sms.service';
+import {AdminAuthModule } from './admin/admin.module';
 
 
 
@@ -36,7 +37,7 @@ import { SmsService } from './sms/sms.service';
      ChatModule, 
      ContactModule, 
      HotDealModule, 
-     JobModule, 
+     JobMarketModule, 
      MarketModule, 
      RealEstateModule, 
      ReminderModule, 
@@ -45,7 +46,8 @@ import { SmsService } from './sms/sms.service';
      VerificationModule,
      ReportModule, 
      NotificationModule, 
-     PrismaModule],
+     PrismaModule, 
+     AdminAuthModule],
   providers: [PrismaService, MiddlewareService, OtpService,MailService, UtilsService, ChatService, SmsService],
   controllers: [OtpController],
   

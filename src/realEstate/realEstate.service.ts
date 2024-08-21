@@ -97,18 +97,23 @@ export class RealEstateService {
                 userId,
             },
         });
-
+    
         if (!realEstate) {
             throw new NotFoundException('Property not found');
         }
-
+    
+        if (replaceImageDto.imageIndex < 0 || replaceImageDto.imageIndex >= realEstate.pictures.length) {
+            throw new ForbiddenException('Image index out of bounds');
+        }
+    
         const updatedPictures = realEstate.pictures.map((picture, index) =>
             index === replaceImageDto.imageIndex ? replaceImageDto.newImageUrl : picture
         );
-
+    
         return this.prisma.realEstate.update({
             where: { id: propertyId },
             data: { pictures: updatedPictures },
         });
     }
+    
 }
