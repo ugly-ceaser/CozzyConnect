@@ -42,9 +42,7 @@ describe('App e2e',()=>{
         const dto:userRegDto ={
           email :"martins.paraclet@gmail.com",
           password: "sample2",
-          phoneNumber:"08033385032",
-          fullName:"martins onyia ugochukwu",
-          profilePicture: ""
+          phoneNumber:"08033385032"
         }
         delete dto.password
 
@@ -58,9 +56,7 @@ describe('App e2e',()=>{
         const dto:userRegDto ={
           email :"martins.paraclet@gmail.com",
           password: "sample2",
-          phoneNumber:"08033385032",
-          fullName:"martins onyia ugochukwu",
-          profilePicture: ""
+          phoneNumber:"08033385032"
         }
         return pactum.spec().post(`/auth/register`)
         .withBody(dto)

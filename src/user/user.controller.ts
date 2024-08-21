@@ -1,44 +1,30 @@
-import { 
-    Body,
-    Controller,
-    Get,
-    Patch,
-    Post,
-    Req,
-    UseGuards, } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { User } from '@prisma/client';
-import { Request } from 'express';
-import { GetUser } from '../auth/decorator';
-import { JWTGaurd } from '../auth/gaurd';
-import { userEditDto } from '../dto/userDto/editUser.dto';
+import { Body, Controller, Get, Patch, Post, UseGuards } from '@nestjs/common';
+import { JWTGaurd } from '../auth/gaurd'; // Ensure this is the correct path for your guard
+import { CreateUserInfoDto, UpdateUserInfoDto } from '../dto/userDto';
 import { UserService } from './user.service';
-
+import { GetUser } from '../auth/decorator'; // Ensure this is the correct path for your decorator
+import { User } from '@prisma/client';
 
 @UseGuards(JWTGaurd)
 @Controller('users')
 export class UserController {
-    constructor(private userService:UserService){}
-   
-   
-    @Get('/profile')
-    home(@GetUser() user:User){
-            return user
-    }
+  constructor(private userService: UserService) {}
 
-    
+  // Create UserInfo for an existing user
+  @Post('/info')
+  async createUserInfo(@Body() dto: CreateUserInfoDto, @GetUser() user: User) {
+    return this.userService.createUserInfo(dto, user.id);
+  }
 
-    @Patch('/update/')
-    updateProfile(
-        @GetUser('id')  userId:string,
-        @Body() dto :userEditDto
-    ){
+  // Get UserInfo of the currently authenticated user
+  @Get('/profile')
+  async getProfile(@GetUser() user: User) {
+    return this.userService.getUserProfile(user.id);
+  }
 
-        return this.userService.editUser(userId,dto)
-    }
-    
-
-   
-
-    
+  // Update UserInfo of the currently authenticated user
+  @Patch('/update')
+  async updateProfile(@GetUser() user: User, @Body() dto: UpdateUserInfoDto) {
+    return this.userService.updateUserProfile(user.id, dto);
+  }
 }

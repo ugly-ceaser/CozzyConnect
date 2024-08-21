@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } fro
 import { JobMarketService } from './job.service';
 import { CreateJobDto,UpdateJobDto } from '../dto/jobDto';
 import { JWTGaurd } from '../auth/gaurd';
+import { AdminJWTGuard } from 'src/admin/guard';
 import { GetUser } from '../auth/decorator/get-user-decorator';
 import { Request } from 'express';
 
@@ -9,7 +10,7 @@ import { Request } from 'express';
 export class JobMarketController {
   constructor(private readonly jobMarketService: JobMarketService) {}
 
-  @UseGuards(JWTGaurd)
+  @UseGuards(AdminJWTGuard)
   @Post()
   async create(
      @Body() createJobDto: CreateJobDto,
@@ -35,7 +36,7 @@ export class JobMarketController {
     return this.jobMarketService.update(id, updateJobDto);
   }
 
-  @UseGuards(JWTGaurd)
+  @UseGuards(AdminJWTGuard)
   @Delete(':id')
   async remove(@Param('id') id: number) {
     return this.jobMarketService.remove(id);

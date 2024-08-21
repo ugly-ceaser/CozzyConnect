@@ -11,22 +11,16 @@ model User {
   id                  String     @id @default(uuid())
   email               String     @unique
   phoneNumber         String?    @unique
-  fullName            String?
   password            String
-  profilePicture      String?
   isVerified          Boolean    @default(false)
   isEmailVerified     Boolean?   @default(false)
   isNumberVerified    Boolean?   @default(false)
   createdAt           DateTime   @default(now())
   updatedAt           DateTime   @updatedAt
-
   tempToken           String?
-
   chatMessagesSent    ChatMessage[] @relation("Sender")
   chatMessagesReceived ChatMessage[] @relation("Receiver")
-
   jobsApplied         JobMarket[]
-
   notifications       Notification[]
   propertiesUploaded  PropertyMarket[]
   apartmentsUploaded  RealEstate[]
@@ -36,23 +30,26 @@ model User {
   searches            Search[]
 
   userKyc             UserKyc?
+  userInfo            UserInfo? // Ensure this is correctly defined
 
   @@map("users")
 }
 
-model UserInfo{
+
+model UserInfo {
   id                  String     @id @default(uuid())
   fullName            String
   profilePicture      String
   address             String
   userType            String
-  
- 
+  user                User       @relation(fields: [userId], references: [id])
+  userId              String     @unique
   createdAt           DateTime   @default(now())
   updatedAt           DateTime   @updatedAt
-  @@map("usersinfo")
 
+  @@map("usersinfo")
 }
+
 
 model UserKyc {
   id              Int     @id @default(autoincrement())
@@ -67,6 +64,7 @@ model UserKyc {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 }
+
 
 
 
@@ -235,3 +233,23 @@ model Search {
 
   @@map("searches")
 }
+
+model Admin {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  roles     Role[]   @relation("AdminRoles")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Role {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  admins    Admin[]  @relation("AdminRoles")
+}
+
+
+
+
+

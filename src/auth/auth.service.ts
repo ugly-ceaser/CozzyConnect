@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import * as argon from 'argon2';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from "../prisma/prisma.service";
-import { userRegDto, userLogDto, otpDto, userEditDto, passDto,ForgotPasswordDto  } from "src/dto/userDto";
+import { userRegDto, userLogDto, otpDto, passDto,EditAuthtDto  } from "../dto/userDto";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { ConfigService } from '@nestjs/config';
 import { MailService } from '../maileServices/mail.service';
@@ -128,8 +128,7 @@ export class AuthService {
                 data: {
                     email: userRegDto.email,
                     password: hashedPwd,
-                    isVerified: false,
-                    profilePicture: "sample.jpg"
+                    isVerified: false
                 },
             });
 
