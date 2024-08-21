@@ -121,24 +121,38 @@ export class AuthService {
     }
 
     async register(userRegDto: userRegDto) {
-        const hashedPwd = await argon.hash(userRegDto.password);
-
         try {
+            // Debugging logs
+            console.log('Received user registration data:', userRegDto);
+    
+            // Ensure password is not undefined
+            if (!userRegDto.password) {
+                throw new Error('Password is missing');
+            }
+    
+            // Hash the password
+            const hashedPwd = await argon.hash(userRegDto.password);
+            console.log('Hashed Password:', hashedPwd);
+    
+            // Create user in the database
             const user = await this.prisma.user.create({
                 data: {
                     email: userRegDto.email,
                     password: hashedPwd,
-                    isVerified: false
+                    isVerified: false,
                 },
             });
-
+    
+            // Generate a token
             const token = await this.signToken(user.id, user.email);
-
+    
+            // Send welcome email
             await this.mailSender.sendEmail(user.email, "Welcome", "434434534");
-
+    
+            // Return the user data and token
             return {
                 data: user,
-                access_token: token
+                access_token: token,
             };
         } catch (error) {
             if (error instanceof PrismaClientKnownRequestError) {
@@ -146,11 +160,12 @@ export class AuthService {
                     throw new ForbiddenException('Credentials taken');
                 }
             }
-
+    
             console.error('Error registering user:', error);
             throw error;
         }
     }
+    
 
     async updatePass(userId: string, dto: passDto) {
         if (dto.password !== dto.confirm_password) {
