@@ -18,8 +18,8 @@ export class CreateUserInfoDto {
   @IsString()
   readonly userType: string;
 
-  @IsNotEmpty()
-  @IsUUID()
+  @IsOptional()
+  
   readonly userId: string;
 }
 
@@ -42,6 +42,6 @@ export class UpdateUserInfoDto {
   readonly userType?: string;
 
   @IsOptional()
-  @IsUUID()
+
   readonly userId?: string;
 }

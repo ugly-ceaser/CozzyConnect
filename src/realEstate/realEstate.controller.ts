@@ -7,18 +7,17 @@ import { CreateRealEstateDto, UpdateRealEstateDto, ReplaceRealEstateImgDto } fro
 @UseGuards(JWTGaurd)
 @Controller('realEstate')
 export class RealEstateController {
-
     constructor(
-        private RealEstateService: RealEstateService
-    ){}
+        private readonly realEstateService: RealEstateService
+    ) {}
 
     @Post('/')
-    createRealEstate(
+    async createRealEstate(
         @Body() createRealEstateDto: CreateRealEstateDto,
         @GetUser('id') userId: string
-    ){
+    ) {
         createRealEstateDto.userId = userId;
-        return this.RealEstateService.create(createRealEstateDto);
+        return this.realEstateService.create(createRealEstateDto);
     }
     
     @Get('/')
@@ -27,46 +26,71 @@ export class RealEstateController {
         @Query('page', ParseIntPipe) page: number = 1,
         @Query('limit', ParseIntPipe) limit: number = 10,
     ) {
-        if (isNaN(page) || isNaN(limit) || page <= 0 || limit <= 0) {
-            throw new BadRequestException('Invalid page or limit parameter');
+        if (page <= 0 || limit <= 0) {
+            throw new BadRequestException('Page and limit must be positive numbers');
         }
-
-        return await this.RealEstateService.findAll(userId, { page, limit });
+        return await this.realEstateService.findAll(userId, { page, limit });
     }
 
     @Get(':id')
-    getRealEstateById(
+    async getRealEstateById(
         @GetUser('id') userId: string,
         @Param('id', ParseIntPipe) propertyId: number
-    ){
-        return this.RealEstateService.findOne(userId, propertyId);
+    ) {
+        return this.realEstateService.findOne(userId, propertyId);
     }
 
     @Patch(':id')
-    updateRealEstate(
+    async updateRealEstate(
         @GetUser('id') userId: string,
         @Param('id', ParseIntPipe) propertyId: number,
         @Body() updateRealEstateDto: UpdateRealEstateDto
-    ){
-        return this.RealEstateService.update(userId, propertyId, updateRealEstateDto);
+    ) {
+        return this.realEstateService.update(userId, propertyId, updateRealEstateDto);
     }
 
     @Delete(':id')
-    deleteRealEstate(
+    async deleteRealEstate(
         @GetUser('id') userId: string,
         @Param('id', ParseIntPipe) propertyId: number
-    ){
-        return this.RealEstateService.remove(userId, propertyId);
+    ) {
+        return this.realEstateService.remove(userId, propertyId);
     }
 
     @Patch(':id/replace-image')
-    replaceImage(
+    async replaceImage(
         @GetUser('id') userId: string,
         @Param('id', ParseIntPipe) propertyId: number,
         @Body() replaceImageDto: ReplaceRealEstateImgDto
-    ){
-        return this.RealEstateService.replaceImage(userId, propertyId, replaceImageDto);
+    ) {
+        return this.realEstateService.replaceImage(userId, propertyId, replaceImageDto);
     }
 
-    // Additional possible controllers can be added here
+    @Post('/search')
+  async searchRealEstate(
+    @GetUser('id') userId: string,
+    @Body() body: {
+      category?: string;
+      numberOfRooms?: number;
+      state?: string;
+      lga?: string;
+      page?: number;
+      limit?: number;
+    }
+  ) {
+    const {
+      category,
+      numberOfRooms,
+      state,
+      lga,
+      page = 1,
+      limit = 10
+    } = body;
+
+    if (page <= 0 || limit <= 0) {
+      throw new BadRequestException('Page and limit must be positive numbers');
+    }
+
+    return this.realEstateService.searchRealEstates({ category, numberOfRooms, state, lga }, { page, limit });
+  }
 }

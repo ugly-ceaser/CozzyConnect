@@ -32,15 +32,12 @@ export class OtpService {
         where: { email },
         data: { tempToken: otpCode },
       }),
-      this.mailSender.sendEmail(email, 'OTP Verification', otpCode)
+      this.mailSender.sendEmail(email, 'OTP Verification', otpCode),
     ]);
 
     // Schedule the deletion of tempToken after 15 minutes
     setTimeout(() => {
-      this.prisma.user.update({
-        where: { email },
-        data: { tempToken: null },
-      }).catch(error => console.error('Error clearing tempToken:', error));
+      this.clearTempToken(user.email);
     }, 900000); // 15 minutes in milliseconds
   }
 
@@ -68,16 +65,25 @@ export class OtpService {
         where: { id: user.id },
         data: { tempToken: otpCode },
       }),
-      this.smsSender.sendSms(formattedPhoneNumber, `Your OTP code is ${otpCode}`)
+      this.smsSender.sendSms(formattedPhoneNumber, `Your OTP code is ${otpCode}`),
     ]);
 
     // Schedule the deletion of tempToken after 15 minutes
     setTimeout(() => {
-      this.prisma.user.update({
-        where: { id: user.id },
-        data: { tempToken: null },
-      }).catch(error => console.error('Error clearing tempToken:', error));
+      this.clearTempToken(user.email);
     }, 900000); // 15 minutes in milliseconds
+  }
+
+  // Clear tempToken for a given user
+  private async clearTempToken(email: string): Promise<void> {
+    try {
+      await this.prisma.user.update({
+        where: { email },
+        data: { tempToken: null },
+      });
+    } catch (error) {
+      console.error('Error clearing tempToken:', error);
+    }
   }
 
   // Format phone number to E.164
@@ -88,6 +94,7 @@ export class OtpService {
     return phoneNumber;
   }
 
+  // Handle OTP requests based on the verification method
   async requestOtp(Dto: otpDto) {
     const { email, phoneNumber, dataVerified } = Dto;
 

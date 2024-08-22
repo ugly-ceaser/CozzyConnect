@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserInfoDto, UpdateUserInfoDto } from '../dto/userDto';
 
@@ -6,7 +6,7 @@ import { CreateUserInfoDto, UpdateUserInfoDto } from '../dto/userDto';
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
-  async createUserInfo(dto: CreateUserInfoDto, userId: string) {
+  async createUserInfo(dto: CreateUserInfoDto, userId: string): Promise<{ data: any, success: boolean }> {
     try {
       // Ensure the user exists
       const userExists = await this.prisma.user.findUnique({
@@ -28,44 +28,44 @@ export class UserService {
         },
       });
 
-      // Update the user's isVerified field to true
-      await this.prisma.user.update({
-        where: { id: userId },
-        data: { isVerified: true },
-      });
+      
 
-      return newUserInfo;
+      return { data: newUserInfo, success: true };
     } catch (error) {
       console.error('Error creating user info:', error);
-      throw new BadRequestException('Failed to create user info');
+      throw new InternalServerErrorException('Failed to create user info');
     }
   }
 
-
-  async getUserProfile(userId: string) {
-    // Fetch UserInfo for the existing user
-    const userInfo = await this.prisma.userInfo.findUnique({
-      where: { userId: userId }, // Fetch UserInfo based on userId
-    });
-
-    if (!userInfo) {
-      throw new NotFoundException(`UserInfo for user ID ${userId} not found`);
-    }
-
-    return userInfo;
-  }
-
-  async updateUserProfile(userId: string, dto: UpdateUserInfoDto) {
-    // Check if UserInfo exists before attempting to update
-    const existingUserInfo = await this.prisma.userInfo.findUnique({
-      where: { userId: userId },
-    });
-
-    if (!existingUserInfo) {
-      throw new NotFoundException(`UserInfo for user ID ${userId} not found`);
-    }
-
+  async getUserProfile(userId: string): Promise<{ data: any, success: boolean }> {
     try {
+      // Fetch UserInfo for the existing user
+      const userInfo = await this.prisma.userInfo.findUnique({
+        where: { userId: userId }, // Fetch UserInfo based on userId
+      });
+
+      if (!userInfo) {
+        throw new NotFoundException(`UserInfo for user ID ${userId} not found`);
+      }
+
+      return { data: userInfo, success: true };
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+      throw new InternalServerErrorException('Failed to fetch user profile');
+    }
+  }
+
+  async updateUserProfile(userId: string, dto: UpdateUserInfoDto): Promise<{ data: any, success: boolean }> {
+    try {
+      // Check if UserInfo exists before attempting to update
+      const existingUserInfo = await this.prisma.userInfo.findUnique({
+        where: { userId: userId },
+      });
+
+      if (!existingUserInfo) {
+        throw new NotFoundException(`UserInfo for user ID ${userId} not found`);
+      }
+
       // Update UserInfo with provided data
       const updatedUserInfo = await this.prisma.userInfo.update({
         where: { userId: userId },
@@ -77,10 +77,10 @@ export class UserService {
         },
       });
 
-      return updatedUserInfo;
+      return { data: updatedUserInfo, success: true };
     } catch (error) {
       console.error('Error updating user profile:', error);
-      throw new BadRequestException('Failed to update user profile');
+      throw new InternalServerErrorException('Failed to update user profile');
     }
   }
 }

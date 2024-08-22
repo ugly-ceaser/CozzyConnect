@@ -1,60 +1,83 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable, NotFoundException, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserKycDto, UpdateUserKycDto } from '../dto/kycDto';
 
 @Injectable()
 export class VerificationService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-  async create(createUserKycDto: CreateUserKycDto) {
-
+  async create(createUserKycDto: CreateUserKycDto): Promise<{ data: any, success: boolean }> {
     const { userId, ...rest } = createUserKycDto;
-    const kyc = this.prisma.userKyc.create({
-      data: {
-        ...rest,
-        user: { connect: { id: userId } },
-        
-      },
-    });
 
-    const user = await this.prisma.user.update({
-      where:{
-        id : userId
+    try {
+      // Create KYC record
+      const kyc = await this.prisma.userKyc.create({
+        data: {
+          ...rest,
+          user: { connect: { id: userId } },
+        },
+      });
 
-        
-      },
-      data:{
-        isVerified : true
-      }
-    })
+      // Update user verification status
+      await this.prisma.user.update({
+        where: { id: userId },
+        data: { isVerified: true },
+      });
 
-    return user;
-  }
-
-  async findOne(userId: string) {
-    const userKyc = await this.prisma.userKyc.findUnique({
-      where: { userId },
-    });
-    if (!userKyc) {
-      throw new NotFoundException(`UserKyc with userId ${userId} not found`);
+      return { data: kyc, success: true };
+    } catch (error) {
+      console.error('Error creating KYC record:', error);
+      throw new InternalServerErrorException('Failed to create KYC record');
     }
-    return userKyc;
   }
 
-  async update(userId: string, updateUserKycDto: UpdateUserKycDto) {
-    await this.findOne(userId);
-    return this.prisma.userKyc.update({
-      where: { userId },
-      data: {
-        ...updateUserKycDto,
-      },
-    });
+  async findOne(userId: string): Promise<{ data: any, success: boolean }> {
+    try {
+      console.log('Finding KYC for userId:', userId);
+      const userKyc = await this.prisma.userKyc.findUnique({
+        where: { userId },
+      });
+
+      if (!userKyc) {
+        throw new NotFoundException(`UserKyc with userId ${userId} not found`);
+      }
+
+      console.log('Found userKyc:', userKyc);
+      return { data: userKyc, success: true };
+    } catch (error) {
+      console.error('Error finding KYC record:', error);
+      throw new InternalServerErrorException('Failed to find KYC record');
+    }
   }
 
-  async remove(userId: string) {
-    await this.findOne(userId);
-    return this.prisma.userKyc.delete({
-      where: { userId },
-    });
+  async update(userId: string, updateUserKycDto: UpdateUserKycDto): Promise<{ data: any, success: boolean }> {
+    try {
+      await this.findOne(userId); // Ensure KYC record exists
+
+      const updatedUserKyc = await this.prisma.userKyc.update({
+        where: { userId },
+        data: updateUserKycDto,
+      });
+
+      return { data: updatedUserKyc, success: true };
+    } catch (error) {
+      console.error('Error updating KYC record:', error);
+      throw new InternalServerErrorException('Failed to update KYC record');
+    }
+  }
+
+  async remove(userId: string): Promise<{ data: any, success: boolean }> {
+    try {
+      await this.findOne(userId); // Ensure KYC record exists
+
+      const deletedUserKyc = await this.prisma.userKyc.delete({
+        where: { userId },
+      });
+
+      return { data: deletedUserKyc, success: true };
+    } catch (error) {
+      console.error('Error deleting KYC record:', error);
+      throw new InternalServerErrorException('Failed to delete KYC record');
+    }
   }
 }

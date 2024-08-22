@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { ChatMessage } from '@prisma/client';
 
@@ -6,25 +6,25 @@ import { ChatMessage } from '@prisma/client';
 export class ChatService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async saveMessage(senderId: string, receiverId: string, message: string): Promise<ChatMessage> {
+  async saveMessage(senderId: string, receiverId: string, message: string): Promise<{ data: ChatMessage | null; success: boolean }> {
     try {
-      return await this.prisma.chatMessage.create({
+      const chatMessage = await this.prisma.chatMessage.create({
         data: {
           senderId,
           receiverId,
           message,
         },
       });
+      return { data: chatMessage, success: true };
     } catch (error) {
       console.error('Error saving message:', error);
-      throw new Error('Failed to save message');
+      throw new InternalServerErrorException('Failed to save message');
     }
   }
 
-  async getMessages(): Promise<ChatMessage[]> {
+  async getMessages(): Promise<{ data: ChatMessage[] | null; success: boolean }> {
     try {
-      // Select all necessary fields
-      return await this.prisma.chatMessage.findMany({
+      const messages = await this.prisma.chatMessage.findMany({
         select: {
           id: true,
           senderId: true,
@@ -35,9 +35,10 @@ export class ChatService {
           isDelivered: true, // Include isDelivered field
         },
       });
+      return { data: messages, success: true };
     } catch (error) {
       console.error('Error retrieving messages:', error);
-      throw new Error('Failed to retrieve messages');
+      throw new InternalServerErrorException('Failed to retrieve messages');
     }
   }
 }
