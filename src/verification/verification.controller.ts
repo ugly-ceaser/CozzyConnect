@@ -1,6 +1,6 @@
-import { Controller, Post, Get, Patch, Delete, Body, Param, UseGuards } from '@nestjs/common';
+import { Controller, Post, Get, Patch, Delete, Body, UseGuards, Param } from '@nestjs/common';
 import { VerificationService } from './verification.service';
-import { CreateUserKycDto,  UpdateUserKycDto } from '../dto/kycDto/index';
+import { CreateUserKycDto, UpdateUserKycDto } from '../dto/kycDto';
 import { GetUser } from '../auth/decorator/get-user-decorator';
 import { JWTGaurd } from '../auth/gaurd';
 
@@ -10,24 +10,29 @@ export class VerificationController {
   constructor(private readonly verificationService: VerificationService) {}
 
   @Post()
-  create(@GetUser('id') userId: string, @Body() createUserKycDto: CreateUserKycDto) {
-
-    createUserKycDto.userId = userId
+  async create(@GetUser('id') userId: string, @Body() createUserKycDto: CreateUserKycDto) {
+    createUserKycDto.userId = userId;
     return this.verificationService.create(createUserKycDto);
   }
 
   @Get()
-  findOne(@GetUser('id') userId: string) {
+  async findOne(@GetUser('id') userId: string) {
+    console.log(`GET /verification called with UserID: ${userId}`);
     return this.verificationService.findOne(userId);
   }
 
   @Patch()
-  update(@GetUser('id') userId: string, @Body() updateUserKycDto: UpdateUserKycDto) {
+  async update(@GetUser('id') userId: string, @Body() updateUserKycDto: UpdateUserKycDto) {
     return this.verificationService.update(userId, updateUserKycDto);
   }
 
   @Delete()
-  remove(@GetUser('id') userId: string) {
+  async remove(@GetUser('id') userId: string) {
     return this.verificationService.remove(userId);
+  }
+
+  @Get('test')
+  testRoute() {
+    return 'Verification route works!';
   }
 }

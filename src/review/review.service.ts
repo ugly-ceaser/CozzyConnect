@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateReviewDto } from '../dto/reviewDto/createReviewDto';
 import { UpdateReviewDto } from '../dto/reviewDto/editReviewDto';
@@ -8,7 +8,7 @@ import { Review } from '@prisma/client';
 export class ReviewService {
   constructor(private prisma: PrismaService) {}
 
-  async create(createReviewDto: CreateReviewDto, userId: string): Promise<Review> {
+  async create(createReviewDto: CreateReviewDto, userId: string): Promise<{ data: Review | null, success: boolean }> {
     const { realEstateId, rating, comment, propertyPictures } = createReviewDto;
 
     try {
@@ -21,14 +21,14 @@ export class ReviewService {
           propertyPictures,
         },
       });
-      return review;
+      return { data: review, success: true };
     } catch (error) {
       console.error('Error creating review:', error);
-      throw new Error('Could not create review');
+      throw new InternalServerErrorException('Could not create review');
     }
   }
 
-  async update(reviewId: number, userId: string, updateReviewDto: UpdateReviewDto): Promise<Review> {
+  async update(reviewId: number, userId: string, updateReviewDto: UpdateReviewDto): Promise<{ data: Review | null, success: boolean }> {
     try {
       const review = await this.prisma.review.findUnique({ where: { id: reviewId } });
       if (!review) {
@@ -37,7 +37,7 @@ export class ReviewService {
       if (review.userId !== userId) {
         throw new ForbiddenException(`You are not allowed to update this review`);
       }
-      return await this.prisma.review.update({
+      const updatedReview = await this.prisma.review.update({
         where: { id: reviewId },
         data: {
           rating: updateReviewDto.rating,
@@ -45,13 +45,17 @@ export class ReviewService {
           propertyPictures: updateReviewDto.propertyPictures,
         },
       });
+      return { data: updatedReview, success: true };
     } catch (error) {
       console.error('Error updating review:', error);
-      throw new Error('Could not update review');
+      if (error instanceof NotFoundException || error instanceof ForbiddenException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Could not update review');
     }
   }
 
-  async delete(reviewId: number, userId: string): Promise<Review> {
+  async delete(reviewId: number, userId: string): Promise<{ data: Review | null, success: boolean }> {
     try {
       const review = await this.prisma.review.findUnique({ where: { id: reviewId } });
       if (!review) {
@@ -60,14 +64,18 @@ export class ReviewService {
       if (review.userId !== userId) {
         throw new ForbiddenException(`You are not allowed to delete this review`);
       }
-      return await this.prisma.review.delete({ where: { id: reviewId } });
+      await this.prisma.review.delete({ where: { id: reviewId } });
+      return { data: null, success: true };
     } catch (error) {
       console.error('Error deleting review:', error);
-      throw new Error('Could not delete review');
+      if (error instanceof NotFoundException || error instanceof ForbiddenException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Could not delete review');
     }
   }
 
-  async getReviewsForRealEstate(realEstateId: number, page: number = 1, limit: number = 10): Promise<{ data: Review[], total: number, page: number, limit: number }> {
+  async getReviewsForRealEstate(realEstateId: number, page: number = 1, limit: number = 10): Promise<{ data: Review[], total: number, page: number, limit: number, success: boolean }> {
     const offset = (page - 1) * limit;
     try {
       const [data, total] = await this.prisma.$transaction([
@@ -78,10 +86,10 @@ export class ReviewService {
         }),
         this.prisma.review.count({ where: { realEstateId } }),
       ]);
-      return { data, total, page, limit };
+      return { data, total, page, limit, success: true };
     } catch (error) {
       console.error('Error fetching reviews for real estate:', error);
-      throw new Error('Could not fetch reviews for real estate');
+      throw new InternalServerErrorException('Could not fetch reviews for real estate');
     }
   }
 }

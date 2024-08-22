@@ -75,13 +75,13 @@ model RealEstate {
   user               User     @relation(fields: [userId], references: [id])
   houseName          String?
   
-  category           String
-  numberOfRooms      Int
+  category           String   @index
+  numberOfRooms      Int      @index
   pictures           String[]
   mainPictureIndex   Int
   description        String
-  state              String
-  lga                String
+  state              String   @index
+  lga                String   @index
   nearby             String[]
   amenities          String[]
   address            String
@@ -91,6 +91,7 @@ model RealEstate {
   
   @@map("properties")
 }
+
 
 model Review {
   id              Int     @id @default(autoincrement())

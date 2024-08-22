@@ -11,7 +11,7 @@ export class UserController {
   constructor(private userService: UserService) {}
 
   // Create UserInfo for an existing user
-  @Post('/info')
+  @Post('/')
   async createUserInfo(@Body() dto: CreateUserInfoDto, @GetUser() user: User) {
     return this.userService.createUserInfo(dto, user.id);
   }
