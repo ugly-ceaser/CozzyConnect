@@ -75,22 +75,29 @@ model RealEstate {
   user               User     @relation(fields: [userId], references: [id])
   houseName          String?
   
-  category           String   @index
-  numberOfRooms      Int      @index
+  category           String
+  numberOfRooms      Int
   pictures           String[]
   mainPictureIndex   Int
   description        String
-  state              String   @index
-  lga                String   @index
+  state              String
+  lga                String
   nearby             String[]
   amenities          String[]
   address            String
   createdAt          DateTime @default(now())
 
   reviews            Review[]
-  
+
+  // Indexes
+  @@index([category])
+  @@index([numberOfRooms])
+  @@index([state])
+  @@index([lga])
+
   @@map("properties")
 }
+
 
 
 model Review {
