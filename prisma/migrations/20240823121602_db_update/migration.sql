@@ -226,6 +226,18 @@ CREATE UNIQUE INDEX "usersinfo_userId_key" ON "usersinfo"("userId");
 CREATE UNIQUE INDEX "UserKyc_userId_key" ON "UserKyc"("userId");
 
 -- CreateIndex
+CREATE INDEX "properties_category_idx" ON "properties"("category");
+
+-- CreateIndex
+CREATE INDEX "properties_numberOfRooms_idx" ON "properties"("numberOfRooms");
+
+-- CreateIndex
+CREATE INDEX "properties_state_idx" ON "properties"("state");
+
+-- CreateIndex
+CREATE INDEX "properties_lga_idx" ON "properties"("lga");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "reviews_userId_realEstateId_key" ON "reviews"("userId", "realEstateId");
 
 -- CreateIndex
