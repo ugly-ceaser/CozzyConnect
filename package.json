@@ -15,7 +15,7 @@
     "db:test:rm": "docker compose rm test-db -s -f -v",
     "db:test:up": "docker compose up test-db -d",
     "db:test:restart": "yarn db:test:rm && yarn db:test:up && timeout /t 3 && yarn prisma:test:deploy",
-    "build": "nest build",
+    "build": "nest build && node --max-old-space-size=512 node_modules/.bin/next build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:debug": "nest start --debug --watch",
