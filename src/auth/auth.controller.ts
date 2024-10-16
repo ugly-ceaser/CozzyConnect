@@ -1,6 +1,6 @@
 import { Body, Controller,HttpCode,HttpStatus,Post,Get, Param } from "@nestjs/common";
 import { AuthService } from "./auth.service";
-import { userRegDto, userLogDto, otpDto, passDto,EditAuthtDto  } from "../dto/userDto";
+import { userRegDto, userLogDto, otpDto, passDto,EditAuthtDto, ForgotPasswordDto, ResetPasswordDto  } from "../dto/userDto";
 import { GetUser } from "./decorator";
 
 @Controller('auth')
@@ -26,17 +26,13 @@ export class AuthController{
     }
 
 
-
     @Post('verify/phone')
     verifyPhoneNumber(@Body() Dto:otpDto){
 
         return this.authservice.verifyPhone(Dto)
 
     }
-
  
-
-    
     @Post('register')
     register(@Body() userRegDto:userRegDto)
     {
@@ -44,7 +40,6 @@ export class AuthController{
         return this.authservice.register(userRegDto)
     }
 
-    
 
     @Post('fpwd/:id')
     forgotPassword(
@@ -53,6 +48,16 @@ export class AuthController{
     ) {
         return this.authservice.updatePass(userId, dto);
     }
+
+    @Post('forgot-password')
+  async forgotPassword2(@Body() dto: ForgotPasswordDto): Promise<void> {
+    return this.authservice.forgotPassword(dto);
+  }
+
+  @Post('reset-password')
+  async resetPassword(@Body() dto: ResetPasswordDto): Promise<void> {
+    return this.authservice.resetPassword(dto);
+  }
     
 
    

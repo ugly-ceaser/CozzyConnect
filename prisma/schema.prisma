@@ -15,6 +15,7 @@ model User {
   isVerified          Boolean    @default(false)
   isEmailVerified     Boolean?   @default(false)
   isNumberVerified    Boolean?   @default(false)
+  country             String?    @default("Nigeria")     // Optional, based on your error logs
   createdAt           DateTime   @default(now())
   updatedAt           DateTime   @updatedAt
   tempToken           String?
@@ -28,6 +29,7 @@ model User {
   reports             Report[]
   reviews             Review[]
   searches            Search[]
+  realEstateInterest RealEstateInterest?
 
   userKyc             UserKyc?
   userInfo            UserInfo? // Ensure this is correctly defined
@@ -46,6 +48,7 @@ model UserInfo {
   userId              String     @unique
   createdAt           DateTime   @default(now())
   updatedAt           DateTime   @updatedAt
+  
 
   @@map("usersinfo")
 }
@@ -66,9 +69,6 @@ model UserKyc {
 }
 
 
-
-
-
 model RealEstate {
   id                 Int      @id @default(autoincrement())
   userId             String
@@ -82,6 +82,7 @@ model RealEstate {
   description        String
   state              String
   lga                String
+  country            String @default("Nigeria")
   nearby             String[]
   amenities          String[]
   address            String
@@ -97,7 +98,6 @@ model RealEstate {
 
   @@map("properties")
 }
-
 
 
 model Review {
@@ -181,10 +181,8 @@ model JobMarket {
 
 model Notification {
   id                Int      @id @default(autoincrement())
-
-  userId             String
-  user               User       @relation(fields: [userId], references: [id])
-
+  userId            String
+  user              User     @relation(fields: [userId], references: [id])
   message           String
   createdAt         DateTime @default(now())
   status            String
@@ -196,6 +194,9 @@ model Notification {
 
   @@map("notifications")
 }
+
+
+
 
 model PropertyMarket {
   id          Int      @id @default(autoincrement())
@@ -213,21 +214,18 @@ model PropertyMarket {
 }
 
 model Reminder {
-  id                     Int      @id @default(autoincrement())
-  
-  userId                 String
-  user                   User     @relation(fields: [userId], references: [id])
-  
-  location               String
-  time                   DateTime
-  date                   DateTime
-  note                   String
+  id                       Int      @id @default(autoincrement())
+  userId                   String
+  title                    String
+  location                 String
+  time                     DateTime
+  dueDate                  DateTime
+  note                     String
   appointmentContactNumber String
-  status                 Boolean
-  createdAt              DateTime @default(now())
-  updatedAt              DateTime @updatedAt
+  status                   Boolean
+  user                     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@map("reminders")
+  @@index([userId])
 }
 
 model Search {
@@ -256,6 +254,18 @@ model Role {
   name      String   @unique
   admins    Admin[]  @relation("AdminRoles")
 }
+
+model RealEstateInterest {
+  id      Int     @id @default(autoincrement())
+  userId  String  @unique
+  user    User    @relation(fields: [userId], references: [id])
+  state   String[]
+  lga     String[]
+  country String[]
+
+  @@map("real_estate_interests")
+}
+
 
 
 

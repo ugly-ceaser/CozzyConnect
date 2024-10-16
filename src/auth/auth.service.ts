@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import * as argon from 'argon2';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from "../prisma/prisma.service";
-import { userRegDto, userLogDto, otpDto, passDto, EditAuthtDto } from "../dto/userDto";
+import { userRegDto, userLogDto, otpDto, passDto, EditAuthtDto, ResetPasswordDto, ForgotPasswordDto } from "../dto/userDto";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { ConfigService } from '@nestjs/config';
 import { MailService } from '../maileServices/mail.service';
@@ -34,6 +34,53 @@ export class AuthService {
         }
     };
 
+    async register(userRegDto: userRegDto) {
+        try {
+            // Debugging log to check received data
+            console.log('Registering user with data:', userRegDto);
+    
+            // Ensure password is present
+            if (!userRegDto.password) {
+                throw new Error('Password is missing');
+            }
+    
+            // Hash the password
+            const hashedPwd = await argon.hash(userRegDto.password);
+            console.log('Hashed Password:', hashedPwd);
+    
+            // Create the user in the database
+            const user = await this.prisma.user.create({
+                data: {
+                    email: userRegDto.email,
+                    password: hashedPwd,
+                    isVerified: false,
+                   
+                },
+            });
+    
+            // Generate a token
+            const token = await this.signToken(user.id, user.email);
+    
+            // Send a welcome email
+            await this.mailSender.sendEmail(user.email, "Welcome", "434434534");
+    
+            // Return user data and token
+            return {
+                data: user,
+                access_token: token,
+            };
+        } catch (error) {
+            if (error instanceof PrismaClientKnownRequestError) {
+                if (error.code === "P2002") {
+                    throw new ForbiddenException('Credentials taken');
+                }
+            }
+    
+            console.error('Error registering user:', error);
+            throw error;
+        }
+    }
+    
     async login(userLogDto: userLogDto): Promise<{ data: any; success: boolean; access_token?: string }> {
         try {
             const emailOrPhoneNumber = userLogDto.EmailOrPhoneNumber;
@@ -126,37 +173,7 @@ export class AuthService {
         }
     }
 
-    async register(userRegDto: userRegDto): Promise<{ data: any; success: boolean; access_token?: string }> {
-        try {
-            const hashedPwd = await argon.hash(userRegDto.password);
-
-            const user = await this.prisma.user.create({
-                data: {
-                    email: userRegDto.email,
-                    password: hashedPwd,
-                    isVerified: false,
-                },
-            });
-
-            const token = await this.signToken(user.id, user.email);
-
-            await this.mailSender.sendEmail(user.email, "Welcome", "434434534");
-
-            return {
-                data: user,
-                success: true,
-                access_token: token,
-            };
-        } catch (error) {
-            if (error instanceof PrismaClientKnownRequestError) {
-                if (error.code === "P2002") {
-                    throw new ForbiddenException('Credentials taken');
-                }
-            }
-            console.error('Error registering user:', error);
-            throw new InternalServerErrorException('Registration failed');
-        }
-    }
+    
 
     async updatePass(userId: string, dto: passDto): Promise<{ data: any; success: boolean }> {
         if (dto.password !== dto.confirm_password) {
@@ -180,4 +197,32 @@ export class AuthService {
             throw new InternalServerErrorException('Failed to update password');
         }
     }
+
+    async forgotPassword(dto: ForgotPasswordDto): Promise<void> {
+        const user = await this.prisma.user.findUnique({ where: { email: dto.email } });
+        if (!user) {
+          throw new Error('User not found');
+        }
+    
+        const token = this.signToken(user.id,user.email);
+    
+        const resetLink = `https://your-frontend-url.com/reset-password?token=${token}`;
+    
+        await this.mailSender.sendEmail(user.email,"Password Reset", resetLink);
+      }
+    
+      async resetPassword(dto: ResetPasswordDto): Promise<void> {
+        const payload = this.jwt.verify(dto.token);
+        const user = await this.prisma.user.findUnique({ where: { email: payload.email } });
+    
+        if (!user) {
+          throw new Error('Invalid token or user not found');
+        }
+    
+        const hashedPassword = await argon.hash(dto.newPassword);
+        await this.prisma.user.update({
+          where: { email: user.email },
+          data: { password: hashedPassword },
+        });
+      }
 }

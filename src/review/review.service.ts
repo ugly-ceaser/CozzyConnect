@@ -8,25 +8,58 @@ import { Review } from '@prisma/client';
 export class ReviewService {
   constructor(private prisma: PrismaService) {}
 
-  async create(createReviewDto: CreateReviewDto, userId: string): Promise<{ data: Review | null, success: boolean }> {
-    const { realEstateId, rating, comment, propertyPictures } = createReviewDto;
-
+  async create(
+    createReviewDto: CreateReviewDto, 
+    userId: string
+  ): Promise<{ data: Review | null, success: boolean }> {
+    const { realEstateId, rating, comment } = createReviewDto;
+  
+    // Check for existing review
+    const existingReview = await this.prisma.review.findUnique({
+      where: {
+        userId_realEstateId: {
+          userId,
+          realEstateId
+        }
+      }
+    });
+    
+    // If the review exists, update it
+    if (existingReview) {
+      const updatedReview = await this.prisma.review.update({
+        where: {
+          userId_realEstateId: {
+            userId,
+            realEstateId
+          }
+        },
+        data: {
+          comment: comment.trim(),
+          rating,
+        },
+      });
+      
+      return { data: updatedReview, success: true };
+    }
+  
+    // If no existing review, create a new one
     try {
-      const review = await this.prisma.review.create({
+      const newReview = await this.prisma.review.create({
         data: {
           userId,
           realEstateId,
           rating,
-          comment,
-          propertyPictures,
+          comment: comment.trim(),
         },
       });
-      return { data: review, success: true };
+      
+      return { data: newReview, success: true };
     } catch (error) {
       console.error('Error creating review:', error);
       throw new InternalServerErrorException('Could not create review');
     }
   }
+  
 
   async update(reviewId: number, userId: string, updateReviewDto: UpdateReviewDto): Promise<{ data: Review | null, success: boolean }> {
     try {
@@ -75,9 +108,23 @@ export class ReviewService {
     }
   }
 
-  async getReviewsForRealEstate(realEstateId: number, page: number = 1, limit: number = 10): Promise<{ data: Review[], total: number, page: number, limit: number, success: boolean }> {
+  async getReviewsForRealEstate(
+    realEstateId: number,
+    page: number = 1,
+    limit: number = 10
+  ): Promise<{
+    data: Review[],
+    images: string[],
+    averageRate: number,
+    total: number,
+    page: number,
+    limit: number,
+    success: boolean
+  }> {
     const offset = (page - 1) * limit;
+    
     try {
+      // Fetch reviews and total count in a transaction
       const [data, total] = await this.prisma.$transaction([
         this.prisma.review.findMany({
           where: { realEstateId },
@@ -86,10 +133,38 @@ export class ReviewService {
         }),
         this.prisma.review.count({ where: { realEstateId } }),
       ]);
-      return { data, total, page, limit, success: true };
+  
+      // Fetch real estate data (to retrieve the images)
+      const realEstateData = await this.prisma.realEstate.findUnique({
+        where: { id: realEstateId }
+      });
+  
+      const images = realEstateData?.pictures || []; // Handle if pictures field is empty or null
+  
+      // Calculate average rating
+      const ratings = data.map(x => x.rating);
+      let averageRate = 0;
+      
+      if (ratings.length > 0) {
+        const totalRating = ratings.reduce((acc, curr) => acc + curr, 0);
+        averageRate = totalRating / ratings.length;
+      }
+  
+      // Return the result
+      return { 
+        data: data, 
+        total: total, 
+        page: page,
+        limit: limit,
+        images: images,
+        averageRate: averageRate,
+        success: true 
+      };
+  
     } catch (error) {
       console.error('Error fetching reviews for real estate:', error);
       throw new InternalServerErrorException('Could not fetch reviews for real estate');
     }
   }
+  
 }

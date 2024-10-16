@@ -32,27 +32,34 @@ export class RealEstateService {
         }
     }
 
-    async findAll(userId: string, { page = 1, limit = 10 }: { page?: number; limit?: number } = {}) {
+    async findAll({ page = 1, limit = 10 }: { page?: number; limit?: number } = {}) {
         try {
             const skip = (page - 1) * limit;
-
+    
+            // Fetch paginated real estate data and total count for all properties
             const [data, total] = await this.prisma.$transaction([
                 this.prisma.realEstate.findMany({
-                    where: { userId },
                     skip,
                     take: limit,
                 }),
-                this.prisma.realEstate.count({
-                    where: { userId },
-                }),
+                this.prisma.realEstate.count(),
             ]);
-
-            return { data: { items: data, total, page, limit }, success: true };
+    
+            return {
+                data: {
+                    items: data,
+                    total,
+                    page,
+                    limit,
+                },
+                success: true
+            };
         } catch (error) {
-            console.error('Error finding all real estates:', error);
+            console.error('Error fetching real estate properties:', error);
             throw new InternalServerErrorException('An error occurred while retrieving real estate properties');
         }
     }
+    
 
     async findOne(userId: string, propertyId: number) {
         try {
@@ -168,41 +175,40 @@ export class RealEstateService {
         }
     }
 
-    async searchRealEstates(filter: {
+    async searchRealEstates(userId: string, { category, numberOfRooms, state, lga, page = 1, limit = 10 }: {
         category?: string;
         numberOfRooms?: number;
         state?: string;
         lga?: string;
-      }, { page = 1, limit = 10 }: { page?: number; limit?: number } = {}) {
-        const skip = (page - 1) * limit;
-      
+        page?: number;
+        limit?: number;
+    }) {
         try {
-          const [data, total] = await this.prisma.$transaction([
-            this.prisma.realEstate.findMany({
-              where: {
-                ...(filter.category && { category: filter.category }),
-                ...(filter.numberOfRooms && { numberOfRooms: filter.numberOfRooms }),
-                ...(filter.state && { state: filter.state }),
-                ...(filter.lga && { lga: filter.lga }),
-              },
-              skip,
-              take: limit,
-            }),
-            this.prisma.realEstate.count({
-              where: {
-                ...(filter.category && { category: filter.category }),
-                ...(filter.numberOfRooms && { numberOfRooms: filter.numberOfRooms }),
-                ...(filter.state && { state: filter.state }),
-                ...(filter.lga && { lga: filter.lga }),
-              },
-            }),
-          ]);
-      
-          return { data: { items: data, total, page, limit }, success: true };
+            const skip = (page - 1) * limit;
+
+            const searchConditions: any = { userId };
+
+            if (category) searchConditions.category = category;
+            if (numberOfRooms) searchConditions.numberOfRooms = numberOfRooms;
+            if (state) searchConditions.state = state;
+            if (lga) searchConditions.lga = lga;
+
+            const [data, total] = await this.prisma.$transaction([
+                this.prisma.realEstate.findMany({
+                    where: searchConditions,
+                    skip,
+                    take: limit,
+                }),
+                this.prisma.realEstate.count({
+                    where: searchConditions,
+                }),
+            ]);
+
+            return { data: { items: data, total, page, limit }, success: true };
         } catch (error) {
-          console.error('Error searching real estates:', error);
-          throw new InternalServerErrorException('An error occurred while searching real estate properties');
+            console.error('Error searching real estate:', error);
+            throw new InternalServerErrorException('An error occurred while searching for real estate properties');
         }
-      }
+    }
       
 }

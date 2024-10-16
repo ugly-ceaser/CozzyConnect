@@ -5,13 +5,16 @@ export class CreateReminderDto {
   userId: string;
 
   @IsString()
+  title: string; // Add this line
+
+  @IsString()
   location: string;
 
   @IsDateString()
   time: Date;
 
   @IsDateString()
-  date: Date;
+  dueDate: Date; // Ensure this matches the field in your schema
 
   @IsString()
   note: string;
@@ -22,8 +25,6 @@ export class CreateReminderDto {
   @IsBoolean()
   status: boolean;
 }
-
-
 
 export class UpdateReminderDto {
   @IsOptional()
@@ -36,7 +37,7 @@ export class UpdateReminderDto {
 
   @IsOptional()
   @IsDateString()
-  date?: Date;
+  dueDate?: Date; // Ensure this matches the field in your schema
 
   @IsOptional()
   @IsString()

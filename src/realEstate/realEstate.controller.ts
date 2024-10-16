@@ -29,7 +29,7 @@ export class RealEstateController {
         if (page <= 0 || limit <= 0) {
             throw new BadRequestException('Page and limit must be positive numbers');
         }
-        return await this.realEstateService.findAll(userId, { page, limit });
+        return await this.realEstateService.findAll({ page, limit });
     }
 
     @Get(':id')
@@ -66,31 +66,19 @@ export class RealEstateController {
         return this.realEstateService.replaceImage(userId, propertyId, replaceImageDto);
     }
 
-    @Post('/search')
-  async searchRealEstate(
-    @GetUser('id') userId: string,
-    @Body() body: {
-      category?: string;
-      numberOfRooms?: number;
-      state?: string;
-      lga?: string;
-      page?: number;
-      limit?: number;
+    @Get('/search')
+    async searchRealEstate(
+        @GetUser('id') userId: string,
+        @Query('category') category?: string,
+        @Query('numberOfRooms', ParseIntPipe) numberOfRooms?: number,
+        @Query('state') state?: string,
+        @Query('lga') lga?: string,
+        @Query('page', ParseIntPipe) page: number = 1,
+        @Query('limit', ParseIntPipe) limit: number = 10
+    ) {
+        if (page <= 0 || limit <= 0) {
+            throw new BadRequestException('Page and limit must be positive numbers');
+        }
+        return this.realEstateService.searchRealEstates(userId, { category, numberOfRooms, state, lga, page, limit });
     }
-  ) {
-    const {
-      category,
-      numberOfRooms,
-      state,
-      lga,
-      page = 1,
-      limit = 10
-    } = body;
-
-    if (page <= 0 || limit <= 0) {
-      throw new BadRequestException('Page and limit must be positive numbers');
-    }
-
-    return this.realEstateService.searchRealEstates({ category, numberOfRooms, state, lga }, { page, limit });
-  }
 }
