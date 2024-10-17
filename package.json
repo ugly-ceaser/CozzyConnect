@@ -77,7 +77,19 @@
     "testEnvironment": "node"
   },
   "dependencies": {
+    "@nestjs/config": "^3.2.3",
     "@nestjs/core": "^10.4.5",
-    "@nestjs/schedule": "^4.1.1"
+    "@nestjs/jwt": "^10.2.0",
+    "@nestjs/passport": "^10.0.3",
+    "@nestjs/schedule": "^4.1.1",
+    "@types/argon2": "^0.15.0",
+    "@types/cookie-parser": "^1.4.7",
+    "@types/node-cron": "^3.0.11",
+    "@types/twilio": "^3.19.3",
+    "argon2": "^0.41.1",
+    "cookie-parser": "^1.4.7",
+    "date-fns": "^4.1.0",
+    "node-cron": "^3.0.3",
+    "twilio": "^5.3.4"
   }
 }
