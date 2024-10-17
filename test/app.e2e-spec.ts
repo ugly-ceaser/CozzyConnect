@@ -3,7 +3,8 @@ import { AppModule } from '../src/app.module';
 import * as pactum from 'pactum'
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { PrismaService } from '../src/prisma/prisma.service';
-import { userEditDto, userLogDto, userRegDto } from '../src/dto/userDto';
+import { userLogDto, userRegDto } from '../src/dto/userDto';
+import {UpdateUserInfoDto} from '../src/dto/userDto';
 
 
 describe('App e2e',()=>{
@@ -41,8 +42,7 @@ describe('App e2e',()=>{
       it('should NOT register',()=>{
         const dto:userRegDto ={
           email :"martins.paraclet@gmail.com",
-          password: "sample2",
-          phoneNumber:"08033385032"
+          password: "sample2"
         }
         delete dto.password
 
@@ -55,8 +55,7 @@ describe('App e2e',()=>{
       it('should register',()=>{
         const dto:userRegDto ={
           email :"martins.paraclet@gmail.com",
-          password: "sample2",
-          phoneNumber:"08033385032"
+          password: "sample2"
         }
         return pactum.spec().post(`/auth/register`)
         .withBody(dto)
@@ -114,9 +113,8 @@ describe('App e2e',()=>{
 
     describe('edit user',()=>{
       it("should return corrent user",()=>{
-        const dto : userEditDto={
-          fullName:"martins",
-          email:"samplemail@gmail.com"
+        const dto : UpdateUserInfoDto={
+          fullName:"martins"
         }
         return pactum
         .spec()
@@ -127,7 +125,6 @@ describe('App e2e',()=>{
         .withBody(dto)
         .expectStatus(200)
         .expectBodyContains(dto.fullName)
-        .expectBodyContains(dto.email)
         .inspect()
       });
     })
