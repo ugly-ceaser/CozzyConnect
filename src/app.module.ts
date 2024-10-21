@@ -4,7 +4,7 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { ChatModule } from './chat/chat.module';
 import { ContactModule } from './contact/contact.module';
-import { HotDealModule } from './hot-deal/hot-deal.module';
+import { HotDealModule } from './hot-deal/hotDeal.module';
 import { JobMarketModule } from './job/job.module';
 import { MarketModule } from './market/market.module';
 import { RealEstateModule } from './realEstate/realEstate.module';
@@ -14,6 +14,7 @@ import { SearchModule } from './search/search.module';
 import { VerificationModule } from './verification/verification.module';
 import { ReportModule } from './report/report.module';
 import { NotificationModule } from './notification/notification.module';
+import { NotificationService } from './notification/notification.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { ConfigModule } from '@nestjs/config';
 import { PrismaService } from './prisma/prisma.service';
@@ -45,13 +46,13 @@ import {AdminAuthModule } from './admin/admin.module';
      RealEstateModule, 
      ReminderModule, 
      ReviewModule, 
-     SearchModule, 
+     SearchModule,  
      VerificationModule,
      ReportModule, 
      NotificationModule, 
      PrismaModule, 
      AdminAuthModule],
-  providers: [PrismaService, MiddlewareService, OtpService,MailService, UtilsService, ChatService, SmsService],
+  providers: [PrismaService, MiddlewareService, OtpService,MailService, UtilsService, ChatService, SmsService,NotificationService],
   controllers: [OtpController],
   
 })

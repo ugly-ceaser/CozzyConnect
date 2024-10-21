@@ -122,21 +122,46 @@ export class ReviewService {
     success: boolean
   }> {
     const offset = (page - 1) * limit;
-    
+  
     try {
-      // Fetch reviews and total count in a transaction
+      // Fetch reviews and total count in a transaction, excluding sensitive user data
       const [data, total] = await this.prisma.$transaction([
         this.prisma.review.findMany({
           where: { realEstateId },
           skip: offset,
           take: limit,
+          include: {
+            user: {
+              select: {
+                id: true,
+                email: true,
+                phoneNumber: true,
+                isVerified: true,
+                isEmailVerified: true,
+                isNumberVerified: true,
+                country: true,
+               
+                // Include userInfo fields
+                userInfo: {
+                  select: {
+                    id: true,
+                    fullName: true,
+                    profilePicture: true,
+                    address: true,
+                    userType: true,
+                    
+                  },
+                },
+              },
+            },
+          },
         }),
         this.prisma.review.count({ where: { realEstateId } }),
       ]);
   
       // Fetch real estate data (to retrieve the images)
       const realEstateData = await this.prisma.realEstate.findUnique({
-        where: { id: realEstateId }
+        where: { id: realEstateId },
       });
   
       const images = realEstateData?.pictures || []; // Handle if pictures field is empty or null
@@ -144,15 +169,15 @@ export class ReviewService {
       // Calculate average rating
       const ratings = data.map(x => x.rating);
       let averageRate = 0;
-      
+  
       if (ratings.length > 0) {
         const totalRating = ratings.reduce((acc, curr) => acc + curr, 0);
         averageRate = totalRating / ratings.length;
       }
   
-      // Return the result
+      // Return the result with filtered user data
       return { 
-        data: data, 
+        data: data,  // This includes only non-sensitive user and userInfo data
         total: total, 
         page: page,
         limit: limit,
@@ -166,5 +191,9 @@ export class ReviewService {
       throw new InternalServerErrorException('Could not fetch reviews for real estate');
     }
   }
+  
+  
+  
+  
   
 }

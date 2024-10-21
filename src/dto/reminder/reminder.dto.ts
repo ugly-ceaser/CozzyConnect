@@ -2,6 +2,7 @@ import { IsString, IsDateString, IsBoolean, IsOptional } from 'class-validator';
 
 export class CreateReminderDto {
   @IsString()
+  @IsOptional()
   userId: string;
 
   @IsString()

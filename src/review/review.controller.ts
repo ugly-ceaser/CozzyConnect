@@ -1,9 +1,10 @@
 import { Controller, Get, Param, Post, Patch, Delete, Body, Query, UseGuards, ParseIntPipe, BadRequestException } from '@nestjs/common';
-import { JWTGaurd } from '../auth/gaurd';
+
 import { ReviewService } from './review.service';
 import { CreateReviewDto } from '../dto/reviewDto/createReviewDto';
 import { UpdateReviewDto } from '../dto/reviewDto/editReviewDto';
 import { GetUser } from '../auth/decorator/get-user-decorator';
+import { JWTGaurd } from '../auth/gaurd';
 
 @UseGuards(JWTGaurd)
 @Controller('reviews')
