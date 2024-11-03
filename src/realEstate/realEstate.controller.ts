@@ -1,8 +1,8 @@
-import { Controller, Get, Param, Post, Patch, Delete, Body, UseGuards, Query, ParseIntPipe, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Param, Post, Patch, Delete, Body, UseGuards, Query, ParseIntPipe, Optional, BadRequestException } from '@nestjs/common';
 import { JWTGaurd } from '../auth/gaurd';
 import { RealEstateService } from './realEstate.service';
 import { GetUser } from '../auth/decorator/get-user-decorator';
-import { CreateRealEstateDto, UpdateRealEstateDto, ReplaceRealEstateImgDto } from '../dto/realEstateDto/index';
+import { CreateRealEstateDto, UpdateRealEstateDto, ReplaceRealEstateImgDto,SearchRealEstateDto } from '../dto/realEstateDto/index';
 
 @UseGuards(JWTGaurd)
 @Controller('realEstate')
@@ -66,19 +66,25 @@ export class RealEstateController {
         return this.realEstateService.replaceImage(userId, propertyId, replaceImageDto);
     }
 
-    @Get('/search')
+    @Post('/search')
     async searchRealEstate(
         @GetUser('id') userId: string,
-        @Query('category') category?: string,
-        @Query('numberOfRooms', ParseIntPipe) numberOfRooms?: number,
-        @Query('state') state?: string,
-        @Query('lga') lga?: string,
-        @Query('page', ParseIntPipe) page: number = 1,
-        @Query('limit', ParseIntPipe) limit: number = 10
+        @Body() searchParams: SearchRealEstateDto
     ) {
+        const { page, limit, numberOfRooms, category, state, lga } = searchParams;
+
+        // Basic validation
         if (page <= 0 || limit <= 0) {
             throw new BadRequestException('Page and limit must be positive numbers');
         }
-        return this.realEstateService.searchRealEstates(userId, { category, numberOfRooms, state, lga, page, limit });
+
+        return this.realEstateService.searchRealEstates(userId, {
+            category,
+            numberOfRooms,
+            state,
+            lga,
+            page,
+            limit
+        });
     }
 }
