@@ -1,5 +1,5 @@
 export class APIEndpoint {
-  public static BASE_URL = "https://cozzyconnect.onrender.com";
+  public static BASE_URL = "http://13.53.41.142:3000";
 
   public static register = {
     method: "POST",

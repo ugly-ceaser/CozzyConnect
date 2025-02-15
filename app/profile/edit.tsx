@@ -151,7 +151,7 @@ const Edit:React.FC<editProps> = ({}) => {
           duration: 3000
         })
 
-        router.replace('/profile/')
+        router.replace('/profile')
       }
     }
     catch (error: any) {
