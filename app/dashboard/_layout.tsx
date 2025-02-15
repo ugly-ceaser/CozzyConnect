@@ -21,13 +21,16 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     <Tabs
       screenOptions={{ 
         headerShown: false,
-        tabBarStyle: { backgroundColor: PRIMARY_COLOR, height: 60 }
+        tabBarStyle: { backgroundColor: PRIMARY_COLOR, height: 60, flexDirection: 'row', justifyContent: 'center', position: 'relative', }
       }} 
       tabBar={isKeyboardShowing && Platform.OS !== "ios" ? () => null : undefined}
     >
       <Tabs.Screen
         name="home"
         options={{
+          tabBarIconStyle: {
+            flex: 1
+          },
           tabBarIcon: ({ focused }) => <Icon style={{ opacity: focused ? 1 : 0.5 }} name="home" color={"#fff"} size={20} />,
           tabBarLabel: () => null,
         }}
@@ -36,6 +39,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       <Tabs.Screen
         name="chat"
         options={{
+          tabBarIconStyle: {
+            flex: 1
+          },
           tabBarIcon: ({ focused }) => <Icon style={{ opacity: focused ? 1 : 0.5 }} name="speech" color={"#fff"} size={20} />,
           tabBarLabel: () => null,
         }}
@@ -45,14 +51,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         name="hot"
         options={{
           tabBarButton: () => (
-            <>
-              <Box style={{ marginHorizontal: 20 }} />
-              <Box style={[styles.floatingBtn, { backgroundColor: bg, left: middle(62),  }]}>
+            <Box style={{ position: 'relative' }}>
+              <Box style={[styles.floatingBtn, { backgroundColor: bg  }]}>
                 <Pressable style={styles.btn} onPress={() => router.push('/dashboard/hot')}>
                   <MatIcon name="local-fire-department" color={"#fff"} size={24} />
                 </Pressable>
               </Box>
-            </>
+            </Box>
           )
         }}
       />
@@ -60,6 +65,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       <Tabs.Screen
         name="work"
         options={{
+          tabBarIconStyle: {
+            flex: 1
+          },
           tabBarIcon: ({ focused }) => <Icon style={{ opacity: focused ? 1 : 0.5 }} name="briefcase" color={"#fff"} size={20} />,
           tabBarLabel: () => null,
         }}
@@ -68,6 +76,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       <Tabs.Screen
         name="settings"
         options={{
+          tabBarIconStyle: {
+            flex: 1
+          },
           tabBarIcon: ({ focused }) => <Icon style={{ opacity: focused ? 1 : 0.5 }} name="equalizer" color={"#fff"} size={20} />,
           tabBarLabel: () => null,
         }}
