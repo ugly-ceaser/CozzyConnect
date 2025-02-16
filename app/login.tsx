@@ -23,6 +23,7 @@ import { UserResponseData } from "@/model/user"
 import { useRegistrationStore } from "@/store/registration"
 import useFetchUser from "@/hooks/useFetchUser"
 import { DEFAULT_TOKEN, DEFAULT_USER } from "@/contents/user"
+import { APIEndpoint } from "@/api"
 
 
 interface LoginPageProps { }
@@ -85,7 +86,7 @@ const LoginPage = ({ }: LoginPageProps) => {
   }
 
   return (
-    <KeyboardAvoidingScrollView>
+    <KeyboardAvoidingScrollView style={{ flex: 1 }}>
       <Box style={[Styles.container, { paddingBottom: 20 }]}>
         <Box style={style.titleContainer}>
           <AuthPageTitle>Welcome {"\n"}back!</AuthPageTitle>
@@ -158,6 +159,7 @@ const LoginPage = ({ }: LoginPageProps) => {
             <Text style={{ color: ORANGE_COLOR, ...style.redirectText }}> Create an account</Text>
           </Link>
         </Box>
+
       </Box>
     </KeyboardAvoidingScrollView>
   )

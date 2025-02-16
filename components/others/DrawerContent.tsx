@@ -10,6 +10,7 @@ import useBoolean from "@/hooks/useBoolean";
 import CustomModal from "../shared/CustomModal";
 import CustomButton from "../shared/CustomButton";
 import useAuth from "@/hooks/useAuth";
+import { APIEndpoint } from "@/api";
 
 interface DrawerContentProps {
   onClose: () => void;
@@ -34,7 +35,7 @@ const DrawerContent: React.FC<DrawerContentProps> = ({ onClose }) => {
   }
 
   const drawerItems: DrawerItem[] = [
-    { name: "Profile", icon: "user", onPress: () => router.push('/profile/') },
+    { name: "Profile", icon: "user", onPress: () => router.push('/profile') },
     // { name: "Verification", icon: "user", onPress: () => router.push('/kyc/') },
   { name: "Verification", icon: "user", onPress: () => router.push('/kyc/form') },
     { name: "Upload", icon: "upload", onPress: () => router.push('/upload') },
@@ -82,6 +83,7 @@ const DrawerContent: React.FC<DrawerContentProps> = ({ onClose }) => {
           <CustomButton style={{ width: 150 }} text="Yes" size="sm" scheme="red" onPress={handleLogout} />
         </HStack>
       </CustomModal>
+      
     </Box>
   )
 }

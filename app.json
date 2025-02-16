@@ -16,6 +16,7 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
+      "permissions": ["INTERNET"],
       "package": "com.jacedev.cozyconnect"
     },
     "web": {
@@ -28,12 +29,12 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
+          "image": "./assets/images/splash.png",
+          "resizeMode": "cover",
           "backgroundColor": "#ffffff"
         }
-      ]
+      ],
+      [ "expo-build-properties", { "android": { "usesCleartextTraffic": true } } ]
     ],
     "experiments": {
       "typedRoutes": true
