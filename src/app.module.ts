@@ -2,7 +2,7 @@ import { Global, MiddlewareConsumer, Module } from '@nestjs/common';
 import { ScheduleModule } from '@nestjs/schedule';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
-import { ChatModule } from './chat/chat.module';
+import { ChatModule } from './chat/chat.module'; 
 import { ContactModule } from './contact/contact.module';
 import { HotDealModule } from './hot-deal/hotDeal.module';
 import { JobMarketModule } from './job/job.module';
@@ -25,41 +25,47 @@ import { OtpController } from './otp/otp.controller';
 import { UtilsService } from './utils/utils.service';
 import { ChatService } from './chat/chat.service';
 import { SmsService } from './sms/sms.service';
-import {AdminAuthModule } from './admin/admin.module';
+import { AdminAuthModule } from './admin/admin.module';
 
-
-
-
+@Global()
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal:true
+      isGlobal: true,
     }),
     ScheduleModule.forRoot(),
     AuthModule,
-     UserModule, 
-     ChatModule, 
-     ContactModule, 
-     HotDealModule, 
-     JobMarketModule, 
-     MarketModule, 
-     RealEstateModule, 
-     ReminderModule, 
-     ReviewModule, 
-     SearchModule,  
-     VerificationModule,
-     ReportModule, 
-     NotificationModule, 
-     PrismaModule, 
-     AdminAuthModule],
-  providers: [PrismaService, MiddlewareService, OtpService,MailService, UtilsService, ChatService, SmsService,NotificationService],
+    UserModule,
+    ChatModule, 
+    ContactModule,
+    HotDealModule,
+    JobMarketModule,
+    MarketModule,
+    RealEstateModule,
+    ReminderModule,
+    ReviewModule,
+    SearchModule,
+    VerificationModule,
+    ReportModule,
+    NotificationModule,
+    PrismaModule,
+    AdminAuthModule,
+  ],
+  providers: [
+    PrismaService,
+    MiddlewareService,
+    OtpService,
+    MailService,
+    UtilsService,
+    ChatService,
+    SmsService,
+    NotificationService,
+  ],
   controllers: [OtpController],
-  
+  exports: [PrismaService],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
-    // Apply the MiddlewareService for all routes
     consumer.apply(MiddlewareService).forRoutes('*');
   }
 }
-

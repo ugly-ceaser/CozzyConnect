@@ -65,15 +65,14 @@ export class RealEstateService {
         try {
             const realEstate = await this.prisma.realEstate.findFirst({
                 where: {
-                    id: propertyId,
-                    userId,
+                    id: propertyId, // Only filters by propertyId
                 },
             });
-
+    
             if (!realEstate) {
                 throw new NotFoundException('Property not found');
             }
-
+    
             return { data: realEstate, success: true };
         } catch (error) {
             console.error('Error finding real estate:', error);
@@ -175,7 +174,43 @@ export class RealEstateService {
         }
     }
 
-    async searchRealEstates(userId: string, { category, numberOfRooms, state, lga, page = 1, limit = 10 }: {
+    // async searchRealEstates(userId: string, { category, numberOfRooms, state, lga, page = 1, limit = 10 }: {
+    //     category?: string;
+    //     numberOfRooms?: number;
+    //     state?: string;
+    //     lga?: string;
+    //     page?: number;
+    //     limit?: number;
+    // }) {
+    //     try {
+    //         const skip = (page - 1) * limit;
+
+    //         const searchConditions: any = { userId };
+
+    //         if (category) searchConditions.category = category;
+    //         if (numberOfRooms) searchConditions.numberOfRooms = numberOfRooms;
+    //         if (state) searchConditions.state = state;
+    //         if (lga) searchConditions.lga = lga;
+
+    //         const [data, total] = await this.prisma.$transaction([
+    //             this.prisma.realEstate.findMany({
+    //                 where: searchConditions,
+    //                 skip,
+    //                 take: limit,
+    //             }),
+    //             this.prisma.realEstate.count({
+    //                 where: searchConditions,
+    //             }),
+    //         ]);
+
+    //         return { data: { items: data, total, page, limit }, success: true };
+    //     } catch (error) {
+    //         console.error('Error searching real estate:', error);
+    //         throw new InternalServerErrorException('An error occurred while searching for real estate properties');
+    //     }
+    // }
+
+    async searchRealEstates(userId: string,{ category, numberOfRooms, state, lga, page = 1, limit = 10 }: {
         category?: string;
         numberOfRooms?: number;
         state?: string;
@@ -185,14 +220,14 @@ export class RealEstateService {
     }) {
         try {
             const skip = (page - 1) * limit;
-
-            const searchConditions: any = { userId };
-
+    
+            const searchConditions: any = {}; // Removed userId
+    
             if (category) searchConditions.category = category;
             if (numberOfRooms) searchConditions.numberOfRooms = numberOfRooms;
             if (state) searchConditions.state = state;
             if (lga) searchConditions.lga = lga;
-
+    
             const [data, total] = await this.prisma.$transaction([
                 this.prisma.realEstate.findMany({
                     where: searchConditions,
@@ -203,7 +238,7 @@ export class RealEstateService {
                     where: searchConditions,
                 }),
             ]);
-
+    
             return { data: { items: data, total, page, limit }, success: true };
         } catch (error) {
             console.error('Error searching real estate:', error);

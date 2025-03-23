@@ -61,3 +61,124 @@
     Copy code
     yarn start:dev
 }
+
+{
+    ec2 Setup
+
+    #!/bin/bash
+
+# Update package lists
+sudo apt-get update -y
+sudo apt-get upgrade -y
+
+# Install Node.js and npm (Latest LTS version)
+curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+sudo apt-get install -y nodejs npm
+
+# Verify installation
+node -v
+npm -v
+
+# Install PM2 for process management
+sudo npm install -g pm2
+
+# Install Git (if not already installed)
+sudo apt-get install -y git
+
+# Install PostgreSQL (if using PostgreSQL as your database)
+sudo apt-get install -y postgresql postgresql-contrib
+sudo systemctl enable postgresql
+sudo systemctl start postgresql
+
+# Install Nginx (if needed for reverse proxy)
+sudo apt-get install -y nginx
+
+#make a directory
+mkdir /home/ubuntu/cozzyconnect_api
+
+}
+
+
+logging into my searches
+
+my CD = Martins Onyia@Martins MINGW64 ~/Documents/Projects/_sshKeys
+ssh -i ./cozzyConnect.pem ubuntu@ec2-13-53-41-142.eu-north-1.compute.amazonaws.com
+
+move file from my local machine
+
+# .env is the file moved to the root in this example
+
+scp -i ./cozzyConnect.pem ../cozzyconnect/.env ubuntu@ec2-13-53-41-142.eu-north-1.compute.amazonaws.com:/home/ubuntu/cozzyconnect_api/
+
+
+# tsconfig.json is the file moved to the root in this example
+scp -i ./cozzyConnect.pem ../cozzyconnect/tsconfig.json ubuntu@ec2-13-53-41-142.eu-north-1.compute.amazonaws.com:/home/ubuntu/cozzyconnect_api/
+
+
+
+# to delete all the files in the cozzyconnect_api
+sudo rm -rf /home/ubuntu/cozzyconnect_api/*
+
+#to move all the files in dist folder
+scp -r -i ./cozzyConnect.pem ../cozzyconnect/dist/* ubuntu@ec2-13-53-41-142.eu-north-1.compute.amazonaws.com:/home/ubuntu/cozzyconnect_api/
+
+#to move  the prisma folder
+scp -r -i ./cozzyConnect.pem ../cozzyconnect/prisma ubuntu@ec2-13-53-41-142.eu-north-1.compute.amazonaws.com:/home/ubuntu/cozzyconnect_api/
+
+# To check ports currently in Use
+sudo netstat -tulnp
+
+
+
+
+2️⃣ Use screen (Better for Managing Sessions)
+#Start a new screen session:
+    screen -S myapp
+#Run your app:
+    npm run start
+#Detach the session (leave it running in the background):
+    Ctrl + A, then press D
+#To reattach later:
+    screen -r myapp
+
+ #to check in port 3000 is feature
+ sudo lsof -i :3000
+
+
+ If you want to kill all Node.js processes (which should include those using ports 3000 and 3002), use:
+
+
+sudo pkill node
+ Verify the Processes Are Terminated
+After killing the processes, verify that no processes are using ports 3000 or 3002:
+
+
+sudo lsof -i :3000 -i :3002
+If the processes have been successfully terminated, you should see no output.
+
+#Summery
+ scp → Securely copies files over SSH.
+-r → Ensures directories are copied recursively.
+-i ./cozzyConnect.pem → Uses your private key for authentication.
+../cozzyconnect/dist/* → Copies everything inside dist/ (both files & folders).
+/home/ubuntu/cozzyconnect_api/ → Destination folder on your EC2 instance.
+
+
+
+
+1. Delete a Specific File
+If you want to delete package.json:
+
+rm /home/ubuntu/cozzyconnect_api/package.json
+2. Delete Multiple Files
+If you want to delete multiple files (e.g., package.json and prisma folder):
+
+
+rm /home/ubuntu/cozzyconnect_api/package.json /home/ubuntu/cozzyconnect_api/prisma/schema.prisma
+3. Delete a Folder and Its Contents
+To delete the prisma folder and all its contents:
+
+
+rm -rf /home/ubuntu/cozzyconnect_api/prisma
+-r → Recursively delete all files and subdirectories.
+-f → Force delete (no confirmation).

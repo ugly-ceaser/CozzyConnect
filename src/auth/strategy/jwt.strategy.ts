@@ -23,7 +23,7 @@ export class JWTStrategy extends PassportStrategy(Strategy, 'Userjwt') {
       where: { id: payload.sub },
     });
 
-    console.log('User found:', user);
+    //console.log('User found:', user);
 
     if (!user) {
       throw new UnauthorizedException('User not found');

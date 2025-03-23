@@ -13,12 +13,14 @@ model User {
   phoneNumber         String?    @unique
   password            String
   isVerified          Boolean    @default(false)
+  hasProfile          Boolean    @default(false)
   isEmailVerified     Boolean?   @default(false)
   isNumberVerified    Boolean?   @default(false)
-  country             String?    @default("Nigeria")     // Optional, based on your error logs
+  country             String?    @default("Nigeria")  
   createdAt           DateTime   @default(now())
   updatedAt           DateTime   @updatedAt
   tempToken           String?
+
   chatMessagesSent    ChatMessage[] @relation("Sender")
   chatMessagesReceived ChatMessage[] @relation("Receiver")
   jobsApplied         JobMarket[]
@@ -32,10 +34,14 @@ model User {
   realEstateInterest RealEstateInterest?
 
   userKyc             UserKyc?
-  userInfo            UserInfo? // Ensure this is correctly defined
+  userInfo            UserInfo?
+
+  blockedBy   BlockedUser[] @relation(name: "BlockedRelation")
+  blocking    BlockedUser[] @relation(name: "BlockerRelation")
 
   @@map("users")
 }
+
 
 
 model UserInfo {
@@ -142,6 +148,7 @@ model ChatMessage {
 
   receiver      User     @relation("Receiver", fields: [receiverId], references: [id])
   receiverId    String
+  deleteStatus Json    @default("{}")
   
   message      String
   createdAt    DateTime  @default(now())
@@ -264,6 +271,17 @@ model RealEstateInterest {
   country String[]
 
   @@map("real_estate_interests")
+}
+
+model BlockedUser {
+  id         Int    @id @default(autoincrement())
+  blockerId  String
+  blockedId  String
+
+  blocker    User   @relation(name: "BlockerRelation", fields: [blockerId], references: [id])
+  blocked    User   @relation(name: "BlockedRelation", fields: [blockedId], references: [id])
+
+  @@map("blocked_users")
 }
 
 

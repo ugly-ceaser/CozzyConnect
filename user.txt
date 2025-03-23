@@ -1,0 +1,59 @@
+userOne = {
+    "data": {
+        "id": "0690be74-ff77-4534-9491-e2d6c5dc5eac",
+        "email": "martins.paraclet@gmail.com",
+        "phoneNumber": null,
+        "password": "$argon2id$v=19$m=65536,t=3,p=4$NFoWhciuQtaALbmqr/edxA$MiPhJ+XQ0LwndcQ9P7yQSpynNdi95b3yLHTvTQv8Iyk",
+        "isVerified": true,
+        "isEmailVerified": true,
+        "isNumberVerified": false,
+        "country": "Nigeria",
+        "createdAt": "2025-03-03T15:24:27.189Z",
+        "updatedAt": "2025-03-03T15:26:58.201Z",
+        "tempToken": null
+    },
+    "success": true,
+    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwNjkwYmU3NC1mZjc3LTQ1MzQtOTQ5MS1lMmQ2YzVkYzVlYWMiLCJlbWFpbCI6Im1hcnRpbnMucGFyYWNsZXRAZ21haWwuY29tIiwiaWF0IjoxNzQxNzg3NjQwLCJleHAiOjE3NDIzOTI0NDB9.5Llle6nCAHUONy_M2gTv_eN3CY6NEPrbE1id3BTf3B8"
+}
+
+
+
+userTwo={
+    "data": {
+        "id": "16fc1fd7-be24-4ef2-b7ce-a37a584c1566",
+        "email": "alexjace151@gmail.com",
+        "phoneNumber": "08052541151",
+        "password": "$argon2id$v=19$m=65536,t=3,p=4$JCQ9bKZ532RjM0F4B1RgGg$hPd7fh9Mf8f5v4m8fuZsCy0rpMgZ30axtarsLVDNEPk",
+        "isVerified": true,
+        "isEmailVerified": true,
+        "isNumberVerified": false,
+        "country": "Nigeria",
+        "createdAt": "2025-03-11T13:16:51.079Z",
+        "updatedAt": "2025-03-11T13:49:38.276Z",
+        "tempToken": null
+    },
+    "success": true,
+    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxNmZjMWZkNy1iZTI0LTRlZjItYjdjZS1hMzdhNTg0YzE1NjYiLCJlbWFpbCI6ImFsZXhqYWNlMTUxQGdtYWlsLmNvbSIsImlhdCI6MTc0MTc4NzkyNywiZXhwIjoxNzQyMzkyNzI3fQ.xR_4c9HUaCW2Obew632J-yXw3lsskezZsnXVNEeyNFQ"
+}
+
+
+/////server////
+
+
+userTwo = {
+    "data": {
+        "id": "16fc1fd7-be24-4ef2-b7ce-a37a584c1566",
+        "email": "alexjace151@gmail.com",
+        "phoneNumber": "08052541151",
+        "password": "$argon2id$v=19$m=65536,t=3,p=4$JCQ9bKZ532RjM0F4B1RgGg$hPd7fh9Mf8f5v4m8fuZsCy0rpMgZ30axtarsLVDNEPk",
+        "isVerified": true,
+        "isEmailVerified": true,
+        "isNumberVerified": false,
+        "country": "Nigeria",
+        "createdAt": "2025-03-11T13:16:51.079Z",
+        "updatedAt": "2025-03-11T13:49:38.276Z",
+        "tempToken": null
+    },
+    "success": true,
+    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxNmZjMWZkNy1iZTI0LTRlZjItYjdjZS1hMzdhNTg0YzE1NjYiLCJlbWFpbCI6ImFsZXhqYWNlMTUxQGdtYWlsLmNvbSIsImlhdCI6MTc0MTc5MzQ0MiwiZXhwIjoxNzQyMzk4MjQyfQ.QDHoZGYbEeZ4RzNLaWmBkXzx-jOlUrqcWmS3Bl0r1Sg"
+}

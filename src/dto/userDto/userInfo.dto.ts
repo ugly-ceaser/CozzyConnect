@@ -31,6 +31,14 @@ export class UpdateUserInfoDto {
 
   @IsOptional()
   @IsString()
+  readonly  email?: string;
+
+  @IsOptional()
+  @IsString() 
+  phoneNumber?: string;
+
+  @IsOptional()
+  @IsString()
   readonly profilePicture?: string;
 
   @IsOptional()

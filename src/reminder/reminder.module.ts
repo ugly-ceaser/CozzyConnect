@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service'; 
 import { ReminderService } from './reminder.service';
 import { ReminderController } from './reminder.controller';
-import { Reminder } from '@prisma/client'; 
+import { PrismaClient, Prisma } from '@prisma/client';
 import { NotificationModule } from '../notification/notification.module';
 
 @Module({

@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';  // Adjust this path based on your project structure
+import { PrismaClient, Prisma } from '@prisma/client';
 import { Contact } from '@prisma/client';  // Assuming your Prisma Client is generated in the default location
 import { CreateContactDto } from '../dto/contact/create-contact.dto';
 
